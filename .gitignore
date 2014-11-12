@@ -230,9 +230,13 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
-#CMake
+# CMake
+# =========================
 CMakeCache.txt
 CMakeFiles
 Makefile
 cmake_install.cmake
 install_manifest.txt
+Win32
+udf_example.dir
+RelWithDebInfo
