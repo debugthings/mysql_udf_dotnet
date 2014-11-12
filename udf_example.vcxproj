@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{5A481DF1-9C45-4152-BC05-9E9EFEDED7D4}</ProjectGUID>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>mysql_udf</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\James\Source\Repos\mysql_udf\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">udf_example.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">udf_example</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\James\Source\Repos\mysql_udf\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">udf_example.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">udf_example</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Users\James\Source\Repos\mysql_udf\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">udf_example.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">udf_example</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Users\James\Source\Repos\mysql_udf\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">udf_example.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">udf_example</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\include;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\sql;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\regex;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;HAVE_DLOPEN;CMAKE_INTDIR="Debug";udf_example_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;HAVE_DLOPEN;CMAKE_INTDIR=\"Debug\";udf_example_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\include;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\sql;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\regex;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\include;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\sql;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\regex;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /machine:X86 /debug %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;wsock32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/James/Source/Repos/mysql_udf/Debug/udf_example.lib</ImportLibrary>
+      <ModuleDefinitionFile>C:/Users/James/Source/Repos/mysql_udf/udf_example.def</ModuleDefinitionFile>
+      <ProgramDataBaseFile>C:/Users/James/Source/Repos/mysql_udf/Debug/udf_example.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <Version>
+      </Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\include;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\sql;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\regex;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;HAVE_DLOPEN;CMAKE_INTDIR="Release";udf_example_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;HAVE_DLOPEN;CMAKE_INTDIR=\"Release\";udf_example_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\include;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\sql;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\regex;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\include;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\sql;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\regex;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;wsock32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/James/Source/Repos/mysql_udf/Release/udf_example.lib</ImportLibrary>
+      <ModuleDefinitionFile>C:/Users/James/Source/Repos/mysql_udf/udf_example.def</ModuleDefinitionFile>
+      <ProgramDataBaseFile>C:/Users/James/Source/Repos/mysql_udf/Release/udf_example.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <Version>
+      </Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\include;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\sql;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\regex;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;HAVE_DLOPEN;CMAKE_INTDIR="MinSizeRel";udf_example_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;HAVE_DLOPEN;CMAKE_INTDIR=\"MinSizeRel\";udf_example_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\include;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\sql;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\regex;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\include;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\sql;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\regex;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;wsock32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/James/Source/Repos/mysql_udf/MinSizeRel/udf_example.lib</ImportLibrary>
+      <ModuleDefinitionFile>C:/Users/James/Source/Repos/mysql_udf/udf_example.def</ModuleDefinitionFile>
+      <ProgramDataBaseFile>C:/Users/James/Source/Repos/mysql_udf/MinSizeRel/udf_example.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <Version>
+      </Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\include;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\sql;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\regex;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;HAVE_DLOPEN;CMAKE_INTDIR="RelWithDebInfo";udf_example_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;HAVE_DLOPEN;CMAKE_INTDIR=\"RelWithDebInfo\";udf_example_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\include;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\sql;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\regex;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\include;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\sql;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\regex;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalOptions> /machine:X86 /debug %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;wsock32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/James/Source/Repos/mysql_udf/RelWithDebInfo/udf_example.lib</ImportLibrary>
+      <ModuleDefinitionFile>C:/Users/James/Source/Repos/mysql_udf/udf_example.def</ModuleDefinitionFile>
+      <ProgramDataBaseFile>C:/Users/James/Source/Repos/mysql_udf/RelWithDebInfo/udf_example.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <Version>
+      </Version>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\James\Source\Repos\mysql_udf\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule C:/Users/James/Source/Repos/mysql_udf/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -HC:/Users/James/Source/Repos/mysql_udf -BC:/Users/James/Source/Repos/mysql_udf --check-stamp-file C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/Users/James/Source/Repos/mysql_udf/CMakeLists.txt;C:\Users\James\Source\Repos\mysql_udf\CMakeLists.txt;C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\3.1.0-rc1\CMakeSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeSystemSpecificInitialize.cmake;C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\3.1.0-rc1\CMakeCCompiler.cmake;C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\3.1.0-rc1\CMakeCXXCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeGenericSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\Windows.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\WindowsPaths.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\Windows-MSVC.cmake;C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\3.1.0-rc1\CMakeRCCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeRCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeCXXInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\Windows-MSVC.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeCommonLanguageInclude.cmake;C:\Users\James\Source\Repos\mysql_udf\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule C:/Users/James/Source/Repos/mysql_udf/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -HC:/Users/James/Source/Repos/mysql_udf -BC:/Users/James/Source/Repos/mysql_udf --check-stamp-file C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/Users/James/Source/Repos/mysql_udf/CMakeLists.txt;C:\Users\James\Source\Repos\mysql_udf\CMakeLists.txt;C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\3.1.0-rc1\CMakeSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeSystemSpecificInitialize.cmake;C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\3.1.0-rc1\CMakeCCompiler.cmake;C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\3.1.0-rc1\CMakeCXXCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeGenericSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\Windows.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\WindowsPaths.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\Windows-MSVC.cmake;C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\3.1.0-rc1\CMakeRCCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeRCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeCXXInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\Windows-MSVC.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeCommonLanguageInclude.cmake;C:\Users\James\Source\Repos\mysql_udf\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule C:/Users/James/Source/Repos/mysql_udf/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -HC:/Users/James/Source/Repos/mysql_udf -BC:/Users/James/Source/Repos/mysql_udf --check-stamp-file C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:/Users/James/Source/Repos/mysql_udf/CMakeLists.txt;C:\Users\James\Source\Repos\mysql_udf\CMakeLists.txt;C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\3.1.0-rc1\CMakeSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeSystemSpecificInitialize.cmake;C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\3.1.0-rc1\CMakeCCompiler.cmake;C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\3.1.0-rc1\CMakeCXXCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeGenericSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\Windows.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\WindowsPaths.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\Windows-MSVC.cmake;C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\3.1.0-rc1\CMakeRCCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeRCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeCXXInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\Windows-MSVC.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeCommonLanguageInclude.cmake;C:\Users\James\Source\Repos\mysql_udf\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule C:/Users/James/Source/Repos/mysql_udf/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -HC:/Users/James/Source/Repos/mysql_udf -BC:/Users/James/Source/Repos/mysql_udf --check-stamp-file C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:/Users/James/Source/Repos/mysql_udf/CMakeLists.txt;C:\Users\James\Source\Repos\mysql_udf\CMakeLists.txt;C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\3.1.0-rc1\CMakeSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeSystemSpecificInitialize.cmake;C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\3.1.0-rc1\CMakeCCompiler.cmake;C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\3.1.0-rc1\CMakeCXXCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeGenericSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\Windows.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\WindowsPaths.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\Windows-MSVC.cmake;C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\3.1.0-rc1\CMakeRCCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeRCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeCXXInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\Platform\Windows-MSVC.cmake;C:\Program Files (x86)\CMake\share\cmake-3.1\Modules\CMakeCommonLanguageInclude.cmake;C:\Users\James\Source\Repos\mysql_udf\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Users\James\Source\Repos\mysql_udf\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\Users\James\Source\Repos\mysql_udf\udf_example.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:/Users/James/Source/Repos/mysql_udf/ZERO_CHECK.vcxproj">
+      <Project>EFEEAAAA-C165-4296-8B19-505B443F1651</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
