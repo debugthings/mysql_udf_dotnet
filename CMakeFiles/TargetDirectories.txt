@@ -1,3 +1,0 @@
-C:/Users/James/Source/Repos/mysql_udf/CMakeFiles/ALL_BUILD.dir
-C:/Users/James/Source/Repos/mysql_udf/CMakeFiles/udf_example.dir
-C:/Users/James/Source/Repos/mysql_udf/CMakeFiles/ZERO_CHECK.dir
