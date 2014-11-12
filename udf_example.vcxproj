@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="Windows-1252"?>
+<?xml version="1.0" encoding="us-ascii"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -56,39 +56,51 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-    <PropertyGroup>
-      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\James\Source\Repos\mysql_udf\Debug\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">udf_example.dir\Debug\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">udf_example</TargetName>
-      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.dll</TargetExt>
-      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</GenerateManifest>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\James\Source\Repos\mysql_udf\Release\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">udf_example.dir\Release\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">udf_example</TargetName>
-      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.dll</TargetExt>
-      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
-      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</GenerateManifest>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Users\James\Source\Repos\mysql_udf\MinSizeRel\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">udf_example.dir\MinSizeRel\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">udf_example</TargetName>
-      <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.dll</TargetExt>
-      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkIncremental>
-      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">true</GenerateManifest>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Users\James\Source\Repos\mysql_udf\RelWithDebInfo\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">udf_example.dir\RelWithDebInfo\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">udf_example</TargetName>
-      <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.dll</TargetExt>
-      <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</LinkIncremental>
-      <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</GenerateManifest>
-    </PropertyGroup>
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\James\Source\Repos\mysql_udf\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">udf_example.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">udf_example</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\James\Source\Repos\mysql_udf\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">udf_example.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">udf_example</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Users\James\Source\Repos\mysql_udf\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">udf_example.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">udf_example</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Users\James\Source\Repos\mysql_udf\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">udf_example.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">udf_example</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <LibraryPath>$(SolutionDir)$(Configuration)\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LibraryPath>$(SolutionDir)$(Configuration)\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <LibraryPath>$(SolutionDir)$(Configuration)\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LibraryPath>$(SolutionDir)$(Configuration)\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\include;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\sql;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\regex;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <CompileAs>CompileAsC</CompileAs>
+      <CompileAs>CompileAsCpp</CompileAs>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -97,7 +109,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;HAVE_DLOPEN;CMAKE_INTDIR="Debug";udf_example_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;HAVE_DLOPEN;CMAKE_INTDIR="Debug";udf_example_EXPORTS</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
     <ResourceCompile>
@@ -114,7 +126,7 @@
     </Midl>
     <Link>
       <AdditionalOptions> /machine:X86 /debug %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;wsock32.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;wsock32.lib;clr_host.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -122,7 +134,8 @@
       <ModuleDefinitionFile>C:/Users/James/Source/Repos/mysql_udf/udf_example.def</ModuleDefinitionFile>
       <ProgramDataBaseFile>C:/Users/James/Source/Repos/mysql_udf/Debug/udf_example.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
-      <Version></Version>
+      <Version>
+      </Version>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -132,7 +145,7 @@
     <ClCompile>
       <AdditionalIncludeDirectories>C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\include;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\sql;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\regex;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
-      <CompileAs>CompileAsC</CompileAs>
+      <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>
       </ExceptionHandling>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -142,7 +155,8 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;HAVE_DLOPEN;CMAKE_INTDIR="Release";udf_example_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <DebugInformationFormat></DebugInformationFormat>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;HAVE_DLOPEN;CMAKE_INTDIR=\"Release\";udf_example_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -158,7 +172,7 @@
     </Midl>
     <Link>
       <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;wsock32.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;wsock32.lib;clr_host.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -166,7 +180,8 @@
       <ModuleDefinitionFile>C:/Users/James/Source/Repos/mysql_udf/udf_example.def</ModuleDefinitionFile>
       <ProgramDataBaseFile>C:/Users/James/Source/Repos/mysql_udf/Release/udf_example.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
-      <Version></Version>
+      <Version>
+      </Version>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -176,7 +191,7 @@
     <ClCompile>
       <AdditionalIncludeDirectories>C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\include;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\sql;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\regex;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
-      <CompileAs>CompileAsC</CompileAs>
+      <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>
       </ExceptionHandling>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
@@ -186,7 +201,8 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;HAVE_DLOPEN;CMAKE_INTDIR="MinSizeRel";udf_example_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <DebugInformationFormat></DebugInformationFormat>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;HAVE_DLOPEN;CMAKE_INTDIR=\"MinSizeRel\";udf_example_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -202,7 +218,7 @@
     </Midl>
     <Link>
       <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;wsock32.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;wsock32.lib;clr_host.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -210,7 +226,8 @@
       <ModuleDefinitionFile>C:/Users/James/Source/Repos/mysql_udf/udf_example.def</ModuleDefinitionFile>
       <ProgramDataBaseFile>C:/Users/James/Source/Repos/mysql_udf/MinSizeRel/udf_example.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
-      <Version></Version>
+      <Version>
+      </Version>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -220,7 +237,7 @@
     <ClCompile>
       <AdditionalIncludeDirectories>C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\include;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\sql;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\regex;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
-      <CompileAs>CompileAsC</CompileAs>
+      <CompileAs>CompileAsCpp</CompileAs>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -246,7 +263,7 @@
     </Midl>
     <Link>
       <AdditionalOptions> /machine:X86 /debug %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;wsock32.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;wsock32.lib;clr_host.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -254,7 +271,8 @@
       <ModuleDefinitionFile>C:/Users/James/Source/Repos/mysql_udf/udf_example.def</ModuleDefinitionFile>
       <ProgramDataBaseFile>C:/Users/James/Source/Repos/mysql_udf/RelWithDebInfo/udf_example.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
-      <Version></Version>
+      <Version>
+      </Version>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -317,11 +335,11 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\Users\James\Source\Repos\mysql_udf\udf_example.c"  />
+    <ClCompile Include="C:\Users\James\Source\Repos\mysql_udf\udf_example.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:/Users/James/Source/Repos/mysql_udf/ZERO_CHECK.vcxproj">
-      <Project>EFEEAAAA-C165-4296-8B19-505B443F1651</Project>
+      <Project>C431BF26-FCC1-41BD-9F87-BD5459C32774</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

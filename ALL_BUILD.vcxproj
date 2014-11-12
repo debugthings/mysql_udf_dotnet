@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="Windows-1252"?>
+<?xml version="1.0" encoding="us-ascii"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -56,13 +56,13 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-    <PropertyGroup>
-      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
-    </PropertyGroup>
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
       <AdditionalIncludeDirectories>C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\include;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\sql;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\regex;C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -163,10 +163,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:/Users/James/Source/Repos/mysql_udf/ZERO_CHECK.vcxproj">
-      <Project>EFEEAAAA-C165-4296-8B19-505B443F1651</Project>
+      <Project>C431BF26-FCC1-41BD-9F87-BD5459C32774</Project>
     </ProjectReference>
     <ProjectReference Include="C:/Users/James/Source/Repos/mysql_udf/udf_example.vcxproj">
-      <Project>5A481DF1-9C45-4152-BC05-9E9EFEDED7D4</Project>
+      <Project>F0639DBF-5E00-4DBD-8862-78CB1DCF441E</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
