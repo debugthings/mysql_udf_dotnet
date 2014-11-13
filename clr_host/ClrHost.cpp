@@ -4,9 +4,13 @@
 const wchar_t *CClrHost::AppDomainManagerAssembly = L"mysql_managed_interface, Version=1.0.0.0, PublicKeyToken=71c4a5d4270bd29c";
 const wchar_t *CClrHost::AppDomainManagerType = L"mysql_managed_interface.MySQLHostManager";
 
+bool g_CLRHasBeenLoaded = false;
+
 /// <summary>
 ///     Initialize the host
 /// </summary>
+
+
 CClrHost::CClrHost() : m_started(false), m_pClr(NULL), m_pClrControl(NULL)
 {
 	return;
@@ -36,7 +40,7 @@ CClrHost::~CClrHost()
 #pragma warning( disable : 4996 )
 HRESULT CClrHost::FinalConstruct()
 {
-	// load the CLR into the process
+	//load the CLR into the process
 	return CorBindToRuntimeEx(NULL,
 		NULL,
 		0,
@@ -44,7 +48,7 @@ HRESULT CClrHost::FinalConstruct()
 		IID_ICLRRuntimeHost,
 		reinterpret_cast<LPVOID *>(&m_pClr));
 
-	//// load the CLR into the process
+	// load the CLR into the process
 	//ICLRMetaHost       *pMetaHost = NULL;
 	//ICLRMetaHostPolicy *pMetaHostPolicy = NULL;
 	//ICLRDebugging      *pCLRDebugging = NULL;
@@ -60,6 +64,23 @@ HRESULT CClrHost::FinalConstruct()
 	//IEnumUnknown * pRtEnum = NULL;
 	//ICLRRuntimeInfo *info = NULL;
 	//ULONG fetched = 0;
+	//pMetaHost->EnumerateLoadedRuntimes(GetCurrentProcess(), &pRtEnum);
+	//while ((hr = pRtEnum->Next(1, (IUnknown **)&info, &fetched)) == S_OK && fetched > 0)
+	//{
+	//	WCHAR strName[128];
+	//	ZeroMemory(strName, sizeof(strName));
+	//	DWORD len = 128;
+	//	info->GetVersionString(strName, &len);
+	//	hr = info->GetInterface(CLSID_CLRRuntimeHost,
+	//		IID_ICLRRuntimeHost,
+	//		reinterpret_cast<LPVOID *>(&m_pClr));
+	//	if (!SUCCEEDED(hr))
+	//		printf("hr failed....");
+
+	//}
+	//pRtEnum->Release();
+	//pRtEnum = NULL;
+
 	//pMetaHost->EnumerateInstalledRuntimes(&pRtEnum);
 	//while ((hr = pRtEnum->Next(1, (IUnknown **)&info, &fetched)) == S_OK && fetched > 0)
 	//{
@@ -67,15 +88,17 @@ HRESULT CClrHost::FinalConstruct()
 	//	ZeroMemory(strName, sizeof(strName));
 	//	DWORD len = 128;
 	//	info->GetVersionString(strName, &len);
-	//	hr = info->GetInterface(CLSID_CLRRuntimeHost, 
-	//		IID_ICLRRuntimeHost, 
+	//	hr = info->GetInterface(CLSID_CLRRuntimeHost,
+	//		IID_ICLRRuntimeHost,
 	//		reinterpret_cast<LPVOID *>(&m_pClr));
 	//	if (!SUCCEEDED(hr))
 	//		printf("hr failed....");
-	//	
+
 	//}
 	//pRtEnum->Release();
-	//return S_OK;
+
+
+	return S_OK;
 }
 
 /// <summary>
@@ -150,6 +173,7 @@ STDMETHODIMP CClrHost::raw_Start()
 	// we should have bound to the runtime, but not yet started it upon entry
 	_ASSERTE(m_pClr != NULL);
 	_ASSERTE(!m_started);
+
 	if (m_pClr == NULL)
 		return E_FAIL;
 
@@ -157,7 +181,10 @@ STDMETHODIMP CClrHost::raw_Start()
 	HRESULT hrClrControl = m_pClr->GetCLRControl(&m_pClrControl);
 	if (FAILED(hrClrControl))
 		return hrClrControl;
-	
+
+	// set ourselves up as the host control
+	HRESULT hrHostControl = m_pClr->SetHostControl(static_cast<IHostControl *>(this));
+
 	// get the host protection manager
 	ICLRHostProtectionManager *pHostProtectionManager = NULL;
 	HRESULT hrGetProtectionManager = m_pClrControl->GetCLRManager(
@@ -174,27 +201,20 @@ STDMETHODIMP CClrHost::raw_Start()
 	if (FAILED(hrHostProtection))
 		return hrHostProtection;
 
-	// set ourselves up as the host control
-	HRESULT hrHostControl = m_pClr->SetHostControl(static_cast<IHostControl *>(this));
-	if (FAILED(hrHostControl))
-		return hrHostControl;
 
 	// setup the AppDomainManager
 	HRESULT hrSetAdm = m_pClrControl->SetAppDomainManagerType(AppDomainManagerAssembly, AppDomainManagerType);
 	if (FAILED(hrSetAdm))
 		return hrSetAdm;
 
-	
-
-	
+	// mark as started
+	m_started = true;
 
 	// finally, start the runtime
 	HRESULT hrStart = m_pClr->Start();
 	if (FAILED(hrStart))
 		return hrStart;
 
-	// mark as started
-	m_started = true;
 	return S_OK;
 }
 
@@ -205,7 +225,6 @@ STDMETHODIMP CClrHost::raw_Start()
 STDMETHODIMP CClrHost::raw_Stop()
 {
 	_ASSERTE(m_started);
-
 	// first send a Dispose call to the managed hosts
 	for (AppDomainManagerMap::iterator iAdm = m_appDomainManagers.begin(); iAdm != m_appDomainManagers.end(); iAdm++)
 		iAdm->second->raw_Dispose();

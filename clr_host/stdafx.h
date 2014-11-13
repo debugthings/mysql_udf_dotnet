@@ -31,7 +31,12 @@
 #include <comdef.h>
 #include <tchar.h>
 #include <mscoree.h>
+#ifdef DEBUG
+#import "Debug/mysql_managed_interface.tlb" no_namespace
+#else
 #import "Release/mysql_managed_interface.tlb" no_namespace
+#endif
+
 #pragma warning (pop)
 #include <metahost.h>
 #pragma comment(lib, "mscoree.lib")

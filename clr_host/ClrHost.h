@@ -43,8 +43,8 @@ public:
 
 	// IHostControl
 public:
-	STDMETHODIMP GetHostManager(const IID &riid,  void **ppvObject);
-	STDMETHODIMP SetAppDomainManager(DWORD dwAppDomainId,  IUnknown *pUnkAppDomainManager);
+	STDMETHODIMP GetHostManager(const IID &riid, void **ppvObject);
+	STDMETHODIMP SetAppDomainManager(DWORD dwAppDomainId, IUnknown *pUnkAppDomainManager);
 
 	// IUnmanagedHost
 public:

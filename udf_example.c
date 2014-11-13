@@ -84,23 +84,15 @@ extern "C"
 	longlong myfunc_int(UDF_INIT *initid, UDF_ARGS *args, char *is_null,
 		char *error);
 	void myfunc_int_deinit(UDF_INIT *initid);
-	int RunApplication(IUnmanagedHostPtr &pClr, char *input);
 
-	int RunApplication(IUnmanagedHostPtr &pClr, char *input)
+	longlong RunApplication(IUnmanagedHostPtr &pClr, longlong input);
+
+	longlong RunApplication(IUnmanagedHostPtr &pClr, longlong input)
 	{
 		// Get the default managed host
 		IManagedHostPtr pManagedHost = pClr->DefaultManagedHost;
 
-		// create a new AppDomain
-		_bstr_t name(L"Second AppDomain");
-		DWORD id = pManagedHost->CreateAppDomain(name);
-
-		// get its host, and print to the screen
-		IManagedHostPtr pSecondManagedHost = pClr->GetManagedHost(id);
-		//pSecondManagedHost->Write(_bstr_t(L"Hello, World."));
-		pSecondManagedHost->Run(_bstr_t(input));
-
-		return 0;
+		return pManagedHost->Run(input);
 	}
 
 
@@ -114,11 +106,14 @@ extern "C"
 		try
 		{
 			// bind the to CLR
-			HRESULT hrBind = CClrHost::BindToRuntime(&pClr.GetInterfacePtr());
-			if (FAILED(hrBind))
-				_com_raise_error(hrBind);
-			// start it up
-			pClr->Start();
+			if (pClr.GetInterfacePtr() == NULL)
+			{
+				HRESULT hrBind = CClrHost::BindToRuntime(&pClr.GetInterfacePtr());
+				if (FAILED(hrBind))
+					_com_raise_error(hrBind);
+				// start it up
+				pClr->Start();
+			}
 		}
 		catch (const _com_error &e)
 		{
@@ -140,10 +135,28 @@ extern "C"
 		int returnCode = 0;
 		try
 		{
-			// bind the to CLR
-			
+			longlong val = 0;
+			uint i;
+			for (i = 0; i < args->arg_count; i++)
+			{
+				if (args->args[i] == NULL)
+					continue;
+				switch (args->arg_type[i]) {
+				case STRING_RESULT:			/* Add string lengths */
+					val += args->lengths[i];
+					break;
+				case INT_RESULT:			/* Add numbers */
+					val += RunApplication(pClr, *((longlong*)args->args[i]));
+					break;
+				case REAL_RESULT:			/* Add numers as longlong */
+					val += (longlong)((double)RunApplication(pClr, *((longlong*)args->args[i])));
+					break;
+				default:
+					break;
+				}
+			}
+			return val;
 			// run the application
-			returnCode = RunApplication(pClr, args->args[0]);
 		}
 		catch (const _com_error &e)
 		{
@@ -159,23 +172,5 @@ extern "C"
 
 	void myfunc_int_deinit(UDF_INIT *initid)
 	{
-		int returnCode = 0;
-		try
-		{
-
-			// finally, dispose of the managed hosts and shut down the runtime
-			pClr->Stop();
-		}
-		catch (const _com_error &e)
-		{
-			const wchar_t *message = (wchar_t *)e.Description() == NULL ?
-				L"" :
-				(wchar_t *)e.Description();
-			std::wcerr << L"Error 0x" << std::hex << e.Error() << L") : " << message << std::endl;
-
-			returnCode = e.Error();
-		}
-
-		CoUninitialize();
 	}
 }
