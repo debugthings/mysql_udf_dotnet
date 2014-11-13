@@ -1,10 +1,5 @@
-﻿<?xml version="1.0" encoding="Windows-1252"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ItemGroup>
-    <ClCompile Include="C:\Users\James\Source\Repos\mysql_udf\udf_example.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="C:\Users\James\Source\Repos\mysql_udf\CMakeLists.txt" />
   </ItemGroup>
@@ -12,5 +7,10 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{DCD49833-BC80-4E59-82E4-90F2C9D5970E}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="mysql_udf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

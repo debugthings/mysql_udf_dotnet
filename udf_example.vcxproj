@@ -22,7 +22,7 @@
     <ProjectGUID>{5A481DF1-9C45-4152-BC05-9E9EFEDED7D4}</ProjectGUID>
     <Keyword>Win32Proj</Keyword>
     <Platform>Win32</Platform>
-    <ProjectName>udf_example</ProjectName>
+    <ProjectName>mysql_udf</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -335,7 +335,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\Users\James\Source\Repos\mysql_udf\udf_example.c" />
+    <ClCompile Include="mysql_udf.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:/Users/James/Source/Repos/mysql_udf/ZERO_CHECK.vcxproj">
