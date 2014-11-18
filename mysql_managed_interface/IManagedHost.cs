@@ -13,7 +13,7 @@ namespace mysql_managed_interface
         /// </summary>
         /// <param name="name">name of the AppDomain to create</param>
         /// <returns>ID of the new AppDomain</returns>
-        int CreateAppDomain([MarshalAs(UnmanagedType.BStr)]string name);
+        string CreateAppDomain([MarshalAs(UnmanagedType.BStr)]string name);
 
         /// <summary>
         ///		Clean up the AppDomianManager
@@ -40,6 +40,9 @@ namespace mysql_managed_interface
         /// 
         [return: MarshalAs(UnmanagedType.I8)]
         Int64 Run([MarshalAs(UnmanagedType.I8)]Int64 path);
+
+        [return: MarshalAs(UnmanagedType.BStr)]
+        string GetCLR();
     }
 
 }

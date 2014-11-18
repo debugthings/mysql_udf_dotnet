@@ -28,6 +28,6 @@ namespace mysql_managed_interface
         ///		Get the managed host for a specific AppDomain
         /// </summary>
         /// <param name="appDomain">AppDomain ID</param>
-        IManagedHost GetManagedHost(int appDomain);
+        IManagedHost GetManagedHost(int appDomain, string clrVersion);
     }
 }

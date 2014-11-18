@@ -8,8 +8,13 @@ using System.Security.Policy;
 
 namespace mysql_managed_interface
 {
-    class MySQLHostManager: AppDomainManager, IManagedHost
+    class MySQLHostManager : AppDomainManager, IManagedHost
     {
+
+        static void ADIDelegate(string[] args)
+        {
+
+        }
 
         public static StrongName CreateStrongName(Assembly assembly)
         {
@@ -30,7 +35,7 @@ namespace mysql_managed_interface
             return new StrongName(keyBlob, assemblyName.Name, assemblyName.Version);
         }
 
-        private  IUnmanagedHost unmanagedInterface = null;
+        private IUnmanagedHost unmanagedInterface = null;
 
         /// <summary>
         ///		A new AppDomain has been created
@@ -43,18 +48,25 @@ namespace mysql_managed_interface
             return;
         }
 
-        public int CreateAppDomain(string name)
+        public string CreateAppDomain(string name)
         {
             PermissionSet permissions = new PermissionSet(PermissionState.None);
             permissions.AddPermission(new SecurityPermission(PermissionState.Unrestricted));
             permissions.AddPermission(new UIPermission(PermissionState.Unrestricted));
 
-            return AppDomain.CreateDomain(
+            AppDomainSetup ads = new AppDomainSetup();
+            ads.AppDomainInitializer = ADIDelegate;
+            ads.ConfigurationFile = "mysqldotnet.config";
+            ads.PrivateBinPath = @"lib\plugin";
+            ads.PrivateBinPathProbe = "";
+            
+
+            return string.Format("{0}||{1}", GetCLR(), AppDomain.CreateDomain(
                 name,
                 AppDomain.CurrentDomain.Evidence,
-                AppDomain.CurrentDomain.SetupInformation,
+                ads,
                 permissions,
-                CreateStrongName(Assembly.GetExecutingAssembly())).Id;
+                CreateStrongName(Assembly.GetExecutingAssembly())).Id);
         }
 
         public void Dispose()
@@ -92,6 +104,11 @@ namespace mysql_managed_interface
             //    fullPath).Assert();
             //AppDomain.CurrentDomain.ExecuteAssembly(fullPath);
             //CodeAccessPermission.RevertAssert();
+        }
+
+        public string GetCLR()
+        {
+            return string.Format("v{0}", Environment.Version.ToString(3));
         }
     }
 }

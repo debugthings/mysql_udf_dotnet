@@ -20,16 +20,21 @@ protected:
 	END_COM_MAP()
 
 private:
-	typedef map<DWORD, IManagedHost *>  AppDomainManagerMap;
+	typedef map<const std::wstring, IManagedHost *>  AppDomainManagerMap;
+	typedef map<const std::wstring, ICLRRuntimeHost *>  CLRRunTimeMap;
 
 	bool                    m_started;
-	ICLRRuntimeHost         *m_pClr;
+	
 	ICLRControl             *m_pClrControl;
 	AppDomainManagerMap     m_appDomainManagers;
+	AppDomainManagerMap     m_NewlyCreatedAppDomains;
+	CLRRunTimeMap			m_CLRRuntimeMap;
 
 private:
 	static const wchar_t    *AppDomainManagerAssembly;
 	static const wchar_t    *AppDomainManagerType;
+	std::wstring			m_lastCLR;
+
 
 public:
 	CClrHost();
@@ -40,6 +45,7 @@ protected:
 
 public:
 	static HRESULT BindToRuntime(IUnmanagedHost **pHost);
+	STDMETHODIMP CreateAppDomainForQuery(std::string FnName);
 
 	// IHostControl
 public:
@@ -51,7 +57,7 @@ public:
 	STDMETHODIMP raw_Start();
 	STDMETHODIMP raw_Stop();
 	STDMETHODIMP get_DefaultManagedHost(IManagedHost **ppHost);
-	STDMETHODIMP raw_GetManagedHost(long appDomain, IManagedHost **ppHost);
+	STDMETHODIMP raw_GetManagedHost(long appDomain, BSTR clr, IManagedHost **ppHost);
 
 	// IHostGCManager
 public:

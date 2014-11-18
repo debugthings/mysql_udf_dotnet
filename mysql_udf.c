@@ -75,8 +75,9 @@ using namespace std;
 _COM_SMARTPTR_TYPEDEF(ISupportErrorInfo, __uuidof(ISupportErrorInfo));
 _COM_SMARTPTR_TYPEDEF(IErrorInfo, __uuidof(IErrorInfo));
 
-class CADMHostModule : public CAtlExeModuleT < CADMHostModule > { };
-CADMHostModule _AtlModule;
+
+
+IUnmanagedHostPtr pClrHost = NULL;
 
 extern "C"
 {
@@ -96,7 +97,7 @@ extern "C"
 	}
 
 
-	IUnmanagedHostPtr pClr;
+
 
 	my_bool myfunc_int_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 	{
@@ -105,15 +106,15 @@ extern "C"
 
 		try
 		{
-			// bind the to CLR
-			if (pClr.GetInterfacePtr() == NULL)
+			if (pClrHost == NULL)
 			{
-				HRESULT hrBind = CClrHost::BindToRuntime(&pClr.GetInterfacePtr());
+				HRESULT hrBind = CClrHost::BindToRuntime(&pClrHost.GetInterfacePtr());
 				if (FAILED(hrBind))
 					_com_raise_error(hrBind);
 				// start it up
-				pClr->Start();
+				pClrHost->Start();
 			}
+
 		}
 		catch (const _com_error &e)
 		{
@@ -125,16 +126,18 @@ extern "C"
 			returnCode = e.Error();
 		}
 
-
+		//initid->ptr = reinterpret_cast<char *>(&pClrHost);
 		return 0;
 	}
 
-	longlong myfunc_int(UDF_INIT *initid, UDF_ARGS *args, char *is_null,
+	long long myfunc_int(UDF_INIT *initid, UDF_ARGS *args, char *is_null,
 		char *error)
 	{
 		int returnCode = 0;
+
 		try
 		{
+
 			longlong val = 0;
 			uint i;
 			for (i = 0; i < args->arg_count; i++)
@@ -146,10 +149,10 @@ extern "C"
 					val += args->lengths[i];
 					break;
 				case INT_RESULT:			/* Add numbers */
-					val += RunApplication(pClr, *((longlong*)args->args[i]));
+					val += RunApplication(pClrHost, *((longlong*)args->args[i]));
 					break;
 				case REAL_RESULT:			/* Add numers as longlong */
-					val += (longlong)((double)RunApplication(pClr, *((longlong*)args->args[i])));
+					val += (longlong)((double)RunApplication(pClrHost, *((longlong*)args->args[i])));
 					break;
 				default:
 					break;
@@ -172,5 +175,6 @@ extern "C"
 
 	void myfunc_int_deinit(UDF_INIT *initid)
 	{
+		//pClrHost->Release();
 	}
 }
