@@ -45,7 +45,7 @@ protected:
 
 public:
 	static HRESULT BindToRuntime(IUnmanagedHost **pHost);
-	STDMETHODIMP CreateAppDomainForQuery(std::string FnName);
+	std::wstring CreateAppDomainForQuery(std::string FnName);
 
 	// IHostControl
 public:

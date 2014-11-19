@@ -86,6 +86,7 @@ HRESULT CClrHost::FinalConstruct()
 	}
 	pRtEnum->Release();
 	pRtEnum = NULL;
+
 	if (!runtimesLoaded)
 	{
 		pMetaHost->EnumerateInstalledRuntimes(&pRtEnum);
@@ -290,9 +291,10 @@ STDMETHODIMP CClrHost::SuspensionEnding(DWORD generation){ return S_OK; }
 STDMETHODIMP CClrHost::SuspensionStarting(){ return S_OK; }
 STDMETHODIMP CClrHost::ThreadIsBlockingForSuspension(){ return S_OK; }
 
-STDMETHODIMP CClrHost::CreateAppDomainForQuery(std::string FnName)
+std::wstring CClrHost::CreateAppDomainForQuery(std::string FnName)
 {
 	IManagedHostPtr pAppMgr = this->GetDefaultManagedHost();
 	_bstr_t retString = pAppMgr->CreateAppDomain(_bstr_t(FnName.c_str()));
+
 	return S_OK;
 }

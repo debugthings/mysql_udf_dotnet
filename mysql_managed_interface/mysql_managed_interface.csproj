@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ICustomAssembly.cs" />
     <Compile Include="IManagedHost.cs" />
     <Compile Include="IUnmanagedHost.cs" />
     <Compile Include="MySQLHostManager.cs" />

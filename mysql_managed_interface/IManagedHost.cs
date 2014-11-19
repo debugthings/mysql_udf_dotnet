@@ -13,7 +13,8 @@ namespace mysql_managed_interface
         /// </summary>
         /// <param name="name">name of the AppDomain to create</param>
         /// <returns>ID of the new AppDomain</returns>
-        string CreateAppDomain([MarshalAs(UnmanagedType.BStr)]string name);
+        string CreateAppDomain(string functionName);
+        string CreateAppDomain(string assemblyName, string functionName);
 
         /// <summary>
         ///		Clean up the AppDomianManager
@@ -26,20 +27,16 @@ namespace mysql_managed_interface
         /// <param name="unmanagedHost">unmanaged half of the host</param>
         void SetUnmanagedHost(IUnmanagedHost unmanagedHost);
 
-        /// <summary>
-        ///		Write a message
-        /// </summary>
-        /// <param name="message">message to write</param>
-        void Write([MarshalAs(UnmanagedType.BStr)]string message);
+        Int64 RunInteger(string functionName, Int64 value);
+        Int64 RunIntegers(string functionName, Int64[] values);
 
 
-        /// <summary>
-        ///		Write a message
-        /// </summary>
-        /// <param name="message">message to write</param>
-        /// 
-        [return: MarshalAs(UnmanagedType.I8)]
-        Int64 Run([MarshalAs(UnmanagedType.I8)]Int64 path);
+        double RunReal(string functionName, double value);
+        double RunReals(string functionName, double[] values);
+
+
+        string RunString(string functionName, string value);
+        string RunStrings(string functionName, string[] values);
 
         [return: MarshalAs(UnmanagedType.BStr)]
         string GetCLR();

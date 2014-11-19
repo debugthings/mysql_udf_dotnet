@@ -10,10 +10,19 @@ namespace mysql_managed_interface
 {
     class MySQLHostManager : AppDomainManager, IManagedHost
     {
+        private System.Collections.Generic.Dictionary<string, ICustomAssembly> functions = null;
+        private string m_Assembly;
+        private string m_Class;
 
         static void ADIDelegate(string[] args)
         {
+            //var asm = AppDomain.CurrentDomain.Load(args[0]);
+        }
 
+        void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
+        {
+           
+            throw new NotImplementedException();
         }
 
         public static StrongName CreateStrongName(Assembly assembly)
@@ -42,27 +51,44 @@ namespace mysql_managed_interface
         /// </summary>
         public override void InitializeNewDomain(AppDomainSetup appDomainInfo)
         {
+            if (appDomainInfo != null)
+            {
+                if (appDomainInfo.AppDomainInitializerArguments.Length > 0)
+                {
+                    m_Assembly = appDomainInfo.AppDomainInitializerArguments[0];
+                }
+                if (appDomainInfo.AppDomainInitializerArguments.Length > 1)
+                {
+                    m_Class = appDomainInfo.AppDomainInitializerArguments[1];
+                }
+            }
             // let the unmanaged host know about us
             InitializationFlags = AppDomainManagerInitializationOptions.RegisterWithHost;
-
-            return;
+           
+            
         }
 
         public string CreateAppDomain(string name)
         {
+            return CreateAppDomain(name, "");
+        }
+
+        public string CreateAppDomain(string assemblyName, string className)
+        {
             PermissionSet permissions = new PermissionSet(PermissionState.None);
-            permissions.AddPermission(new SecurityPermission(PermissionState.Unrestricted));
-            permissions.AddPermission(new UIPermission(PermissionState.Unrestricted));
+            permissions.AddPermission(new SecurityPermission(SecurityPermissionFlag.Execution));
 
             AppDomainSetup ads = new AppDomainSetup();
             ads.AppDomainInitializer = ADIDelegate;
+            ads.AppDomainInitializerArguments = new string[] { assemblyName, className };
             ads.ConfigurationFile = "mysqldotnet.config";
             ads.PrivateBinPath = @"lib\plugin";
             ads.PrivateBinPathProbe = "";
-            
+
+            string AppDomainName = DateTime.Now.ToFileTime().ToString();
 
             return string.Format("{0}||{1}", GetCLR(), AppDomain.CreateDomain(
-                name,
+                AppDomainName,
                 AppDomain.CurrentDomain.Evidence,
                 ads,
                 permissions,
@@ -93,22 +119,40 @@ namespace mysql_managed_interface
         public Int64 Run(Int64 path)
         {
             return (path * 3);
-            //new FileIOPermission(PermissionState.Unrestricted).Assert();
-            //string fullPath = Path.Combine(
-            //    Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-            //    path);
-            //CodeAccessPermission.RevertAssert();
-
-            //new FileIOPermission(
-            //    FileIOPermissionAccess.Read | FileIOPermissionAccess.PathDiscovery,
-            //    fullPath).Assert();
-            //AppDomain.CurrentDomain.ExecuteAssembly(fullPath);
-            //CodeAccessPermission.RevertAssert();
         }
 
         public string GetCLR()
         {
             return string.Format("v{0}", Environment.Version.ToString(3));
+        }
+
+        public long RunInteger(string functionName, long value)
+        {
+            return functions[functionName].RunInteger(value);
+        }
+
+        public long RunIntegers(string functionName, long[] values)
+        {
+            return functions[functionName].RunIntegers(values);
+        }
+        public double RunReal(string functionName, double value)
+        {
+            return functions[functionName].RunReal(value);
+        }
+
+        public double RunReals(string functionName, double[] values)
+        {
+            return functions[functionName].RunReals(values);
+        }
+
+        public string RunString(string functionName, string value)
+        {
+            return functions[functionName].RunString(value);
+        }
+
+        public string RunStrings(string functionName, string[] values)
+        {
+            return functions[functionName].RunStrings(values);
         }
     }
 }

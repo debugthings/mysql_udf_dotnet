@@ -76,25 +76,30 @@ _COM_SMARTPTR_TYPEDEF(ISupportErrorInfo, __uuidof(ISupportErrorInfo));
 _COM_SMARTPTR_TYPEDEF(IErrorInfo, __uuidof(IErrorInfo));
 
 
-
-IUnmanagedHostPtr pClrHost = NULL;
-
 extern "C"
 {
+	IUnmanagedHostPtr pClrHost = NULL;
+
 	my_bool myfunc_int_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
-	longlong myfunc_int(UDF_INIT *initid, UDF_ARGS *args, char *is_null,
+	long long myfunc_int(UDF_INIT *initid, UDF_ARGS *args, char *is_null,
 		char *error);
 	void myfunc_int_deinit(UDF_INIT *initid);
 
-	longlong RunApplication(IUnmanagedHostPtr &pClr, longlong input);
-
-	longlong RunApplication(IUnmanagedHostPtr &pClr, longlong input)
+	longlong RunInteger(IUnmanagedHostPtr &pClr, longlong input)
 	{
 		// Get the default managed host
 		IManagedHostPtr pManagedHost = pClr->DefaultManagedHost;
 
-		return pManagedHost->Run(input);
+		return pManagedHost->RunInteger(L"myfunc", input);
 	}
+
+	//longlong RunIntegers(IUnmanagedHostPtr &pClr, longlong* input)
+	//{
+	//	// Get the default managed host
+	//	IManagedHostPtr pManagedHost = pClr->DefaultManagedHost;
+	//	SAFEARRAY sa;
+	//	return pManagedHost->RunIntegers(L"myfunc", input);
+	//}
 
 
 
@@ -149,10 +154,10 @@ extern "C"
 					val += args->lengths[i];
 					break;
 				case INT_RESULT:			/* Add numbers */
-					val += RunApplication(pClrHost, *((longlong*)args->args[i]));
+					val += RunInteger(pClrHost, *((longlong*)args->args[i]));
 					break;
 				case REAL_RESULT:			/* Add numers as longlong */
-					val += (longlong)((double)RunApplication(pClrHost, *((longlong*)args->args[i])));
+					val += (longlong)((double)RunInteger(pClrHost, *((longlong*)args->args[i])));
 					break;
 				default:
 					break;
