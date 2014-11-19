@@ -21,7 +21,7 @@ namespace mysql_managed_interface
 
         void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
         {
-           
+
             throw new NotImplementedException();
         }
 
@@ -51,21 +51,10 @@ namespace mysql_managed_interface
         /// </summary>
         public override void InitializeNewDomain(AppDomainSetup appDomainInfo)
         {
-            if (appDomainInfo != null)
-            {
-                if (appDomainInfo.AppDomainInitializerArguments.Length > 0)
-                {
-                    m_Assembly = appDomainInfo.AppDomainInitializerArguments[0];
-                }
-                if (appDomainInfo.AppDomainInitializerArguments.Length > 1)
-                {
-                    m_Class = appDomainInfo.AppDomainInitializerArguments[1];
-                }
-            }
             // let the unmanaged host know about us
             InitializationFlags = AppDomainManagerInitializationOptions.RegisterWithHost;
-           
-            
+
+
         }
 
         public string CreateAppDomain(string name)
