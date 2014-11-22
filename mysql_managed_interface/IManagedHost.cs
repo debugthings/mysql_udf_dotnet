@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace mysql_managed_interface
+namespace MySQLHostManager
 {
     [ComVisible(true),
      Guid("0961af1d-ebb7-4f7d-ab4a-d4234b74caca"),
@@ -13,8 +13,7 @@ namespace mysql_managed_interface
         /// </summary>
         /// <param name="name">name of the AppDomain to create</param>
         /// <returns>ID of the new AppDomain</returns>
-        string CreateAppDomain(string functionName);
-        string CreateAppDomain(string assemblyName, string functionName);
+        IManagedHost CreateAppDomain(string typeName);
 
         /// <summary>
         ///		Clean up the AppDomianManager
@@ -40,6 +39,12 @@ namespace mysql_managed_interface
 
         [return: MarshalAs(UnmanagedType.BStr)]
         string GetCLR();
+
+        string GetAssemblyCLRVersion(string AssemblyName);
+
+        string GetAppDomainName { get; }
+
+        bool Unload(string FriendlyName);
     }
 
 }

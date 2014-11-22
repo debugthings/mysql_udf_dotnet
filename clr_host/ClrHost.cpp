@@ -1,8 +1,8 @@
 
 #include "ClrHost.h"
 
-const wchar_t *CClrHost::AppDomainManagerAssembly = L"mysql_managed_interface, Version=1.0.0.0, PublicKeyToken=71c4a5d4270bd29c";
-const wchar_t *CClrHost::AppDomainManagerType = L"mysql_managed_interface.MySQLHostManager";
+const wchar_t *CClrHost::AppDomainManagerAssembly = L"MySQLHostManager, Version=1.0.0.0, PublicKeyToken=71c4a5d4270bd29c";
+const wchar_t *CClrHost::AppDomainManagerType = L"MySQLHostManager.MySQLHostManager";
 
 bool g_CLRHasBeenLoaded = false;
 
@@ -286,15 +286,41 @@ STDMETHODIMP CClrHost::raw_GetManagedHost(long appDomain, BSTR clr, IManagedHost
 	}
 }
 
+STDMETHODIMP CClrHost::raw_GetSpecificManagedHost(BSTR clr, IManagedHost **ppHost)
+{
+	_ASSERTE(m_started);
+
+	if (ppHost == NULL)
+		return E_POINTER;
+
+	// get the AppDomainManager for the specified domain
+	auto iHost = m_NewlyCreatedAppDomains[clr];
+
+	// see if we've got a host
+	if (iHost == NULL)
+	{
+		*ppHost = NULL;
+		return E_NOMANAGEDHOST;
+	}
+	else
+	{
+		*ppHost = iHost;
+		(*ppHost)->AddRef();
+		return S_OK;
+	}
+}
+
+
 // IHostGCManager
 STDMETHODIMP CClrHost::SuspensionEnding(DWORD generation){ return S_OK; }
 STDMETHODIMP CClrHost::SuspensionStarting(){ return S_OK; }
 STDMETHODIMP CClrHost::ThreadIsBlockingForSuspension(){ return S_OK; }
 
-std::wstring CClrHost::CreateAppDomainForQuery(std::string FnName)
+STDMETHODIMP CClrHost::raw_CreateAppDomainForQuery(BSTR FnName, BSTR *pRetVal)
 {
 	IManagedHostPtr pAppMgr = this->GetDefaultManagedHost();
-	_bstr_t retString = pAppMgr->CreateAppDomain(_bstr_t(FnName.c_str()));
-
+	IManagedHostPtr pNewDomain = pAppMgr->CreateAppDomain(FnName);
+	*pRetVal = (BSTR)pNewDomain->GetAppDomainName;
+	this->m_NewlyCreatedAppDomains[std::wstring(*pRetVal)] = pNewDomain;
 	return S_OK;
 }

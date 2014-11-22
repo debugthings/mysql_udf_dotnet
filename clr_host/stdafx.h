@@ -26,15 +26,16 @@
 #include "resource.h"
 #include <iostream>
 #include <map>
+#include <string>
 #include <atlbase.h>
 #include <atlcom.h>
 #include <comdef.h>
 #include <tchar.h>
 #include <mscoree.h>
 #ifdef DEBUG
-#import "Debug/mysql_managed_interface.tlb" no_namespace
+#import "Debug/MySQLHostManager.tlb" no_namespace
 #else
-#import "Release/mysql_managed_interface.tlb" no_namespace
+#import "Release/MySQLHostManager.tlb" no_namespace
 #endif
 
 #pragma warning (pop)

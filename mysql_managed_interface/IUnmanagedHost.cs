@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 
 
-namespace mysql_managed_interface
+namespace MySQLHostManager
 {
     [ComVisible(true),
      Guid("3659e1f4-5003-4d1b-9c37-d82325428f94"),
@@ -29,5 +29,9 @@ namespace mysql_managed_interface
         /// </summary>
         /// <param name="appDomain">AppDomain ID</param>
         IManagedHost GetManagedHost(int appDomain, string clrVersion);
+
+        IManagedHost GetSpecificManagedHost(string appdomainName);
+
+        string CreateAppDomainForQuery(string FnName);
     }
 }

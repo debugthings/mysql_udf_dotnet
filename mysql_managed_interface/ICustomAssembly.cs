@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace mysql_managed_interface
+namespace MySQLHostManager
 {
     public interface ICustomAssembly
     {

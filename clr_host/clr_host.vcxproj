@@ -64,7 +64,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>"$(TargetFrameworkSDKToolsDirectory)TlbExp.exe" "$(SolutionDir)mysql_managed_interface\bin\$(Configuration)\mysql_managed_interface.dll" /out:"$(IntDir)mysql_managed_interface.tlb"</Command>
+      <Command>"$(TargetFrameworkSDKToolsDirectory)TlbExp.exe" "$(SolutionDir)mysql_managed_interface\bin\$(Configuration)\MySQLHostManager.dll" /out:"$(IntDir)MySQLHostManager.tlb"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

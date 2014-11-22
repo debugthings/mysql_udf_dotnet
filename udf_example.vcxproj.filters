@@ -19,4 +19,7 @@
   <ItemGroup>
     <ResourceCompile Include="mysql_udf.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="MySQLDotNet.def" />
+  </ItemGroup>
 </Project>

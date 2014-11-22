@@ -7,8 +7,8 @@
     <ProjectGuid>{A15DADAC-D3C8-4226-93CD-2DA7C85F51DC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>mysql_managed_interface</RootNamespace>
-    <AssemblyName>mysql_managed_interface</AssemblyName>
+    <RootNamespace>MySQLHostManager</RootNamespace>
+    <AssemblyName>MySQLHostManager</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -43,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MySQLAssemblyList.cs" />
     <Compile Include="ICustomAssembly.cs" />
     <Compile Include="IManagedHost.cs" />
     <Compile Include="IUnmanagedHost.cs" />
@@ -51,10 +53,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="generic_signing.snk" />
+    <None Include="mysqld.exe.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy $(TargetPath) C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\sql\RelWithDebInfo /y</PostBuildEvent>
+    <PostBuildEvent>xcopy $(TargetPath) C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\sql\RelWithDebInfo /y
+
+xcopy $(TargetDir)mysqld.exe.config C:\Users\James\Source\BazaarRepos\mysql-server\mysql-5.5\sql\RelWithDebInfo /y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

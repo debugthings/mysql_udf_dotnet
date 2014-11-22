@@ -1,0 +1,12 @@
+LIBRARY		MySQLDotNet
+VERSION		1.0
+EXPORTS
+  mysqldotnet_int_deinit
+  mysqldotnet_int_init
+  mysqldotnet_int
+  mysqldotnet_real_deinit
+  mysqldotnet_real_init
+  mysqldotnet_real
+  mysqldotnet_string_deinit
+  mysqldotnet_string_init
+  mysqldotnet_string
