@@ -18,6 +18,7 @@ protected:
 		COM_INTERFACE_ENTRY(IHostGCManager)
 		COM_INTERFACE_ENTRY(IUnmanagedHost)
 	END_COM_MAP()
+	DECLARE_PROTECT_FINAL_CONSTRUCT()
 
 private:
 	typedef map<const std::wstring, IManagedHost *>  AppDomainManagerMap;

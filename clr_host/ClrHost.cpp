@@ -42,21 +42,16 @@ CClrHost::~CClrHost()
 #pragma warning( disable : 4996 )
 HRESULT CClrHost::FinalConstruct()
 {
-	//load the CLR into the process
-	/*return CorBindToRuntimeEx(NULL,
-		NULL,
-		0,
-		CLSID_CLRRuntimeHost,
-		IID_ICLRRuntimeHost,
-		reinterpret_cast<LPVOID *>(&m_pClr));*/
 
 	//load the CLR into the process
+	// First we get an instance of the MetaHost
 	ICLRMetaHost       *pMetaHost = NULL;
 	ICLRMetaHostPolicy *pMetaHostPolicy = NULL;
 	ICLRDebugging      *pCLRDebugging = NULL;
 	HRESULT hr;
 	hr = CLRCreateInstance(CLSID_CLRMetaHost, IID_ICLRMetaHost,
 		(LPVOID*)&pMetaHost);
+
 	/*hr = CLRCreateInstance(CLSID_CLRMetaHostPolicy, IID_ICLRMetaHostPolicy,
 	(LPVOID*)&pMetaHostPolicy);*/
 	/*hr = CLRCreateInstance(CLSID_CLRDebugging, IID_ICLRDebugging,
@@ -72,6 +67,10 @@ HRESULT CClrHost::FinalConstruct()
 	WCHAR strName[128];
 	DWORD len = 128;
 
+	// If for whatever reason we end up here, we need to check to see what Runtimes are loaded
+	// This will set the default runtime as the last CLR to be loaded.
+	// At the time of writing this application it is 4.5 (4.0)
+
 	while ((hr = pRtEnum->Next(1, (IUnknown **)&info, &fetched)) == S_OK && fetched > 0)
 	{
 		ZeroMemory(strName, sizeof(strName));
@@ -81,12 +80,41 @@ HRESULT CClrHost::FinalConstruct()
 			reinterpret_cast<LPVOID *>(&m_pClr));
 		if (!SUCCEEDED(hr))
 			printf("hr failed....");
-		runtimesLoaded = true;
+
+		HRESULT hrClrControl = m_pClr->GetCLRControl(&m_pClrControl);
+		if (FAILED(hrClrControl))
+			return hrClrControl;
+
+		// set ourselves up as the host control
+		HRESULT hrHostControl = m_pClr->SetHostControl(static_cast<IHostControl *>(this));
+		if (FAILED(hrHostControl))
+			return hrHostControl;
+
+		// get the host protection manager
+		ICLRHostProtectionManager *pHostProtectionManager = NULL;
+		HRESULT hrGetProtectionManager = m_pClrControl->GetCLRManager(
+			IID_ICLRHostProtectionManager,
+			reinterpret_cast<void **>(&pHostProtectionManager));
+		if (FAILED(hrGetProtectionManager))
+			return hrGetProtectionManager;
+
+		// setup host proctection
+		HRESULT hrHostProtection = pHostProtectionManager->SetProtectedCategories(
+			(EApiCategories)(eSynchronization | eSelfAffectingThreading));
+		pHostProtectionManager->Release();
+
+		if (FAILED(hrHostProtection))
+			return hrHostProtection;
+
 		this->m_lastCLR.assign(strName);
+		runtimesLoaded = true;
 	}
 	pRtEnum->Release();
 	pRtEnum = NULL;
 
+	// If no runtimes are loaded we will make sure to load them all.
+	// This will set the default runtime as the last CLR to be loaded.
+	// At the time of writing this application it is 4.5 (4.0)
 	if (!runtimesLoaded)
 	{
 		pMetaHost->EnumerateInstalledRuntimes(&pRtEnum);
@@ -101,6 +129,36 @@ HRESULT CClrHost::FinalConstruct()
 			if (!SUCCEEDED(hr))
 				printf("hr failed....");
 			m_CLRRuntimeMap[std::wstring(strName)] = m_pClr;
+
+
+			HRESULT hrClrControl = m_pClr->GetCLRControl(&m_pClrControl);
+			if (FAILED(hrClrControl))
+				return hrClrControl;
+
+			// set ourselves up as the host control
+			HRESULT hrHostControl = m_pClr->SetHostControl(static_cast<IHostControl *>(this));
+			if (FAILED(hrHostControl))
+
+				return hrHostControl;
+			// get the host protection manager
+			ICLRHostProtectionManager *pHostProtectionManager = NULL;
+			HRESULT hrGetProtectionManager = m_pClrControl->GetCLRManager(
+				IID_ICLRHostProtectionManager,
+				reinterpret_cast<void **>(&pHostProtectionManager));
+			if (FAILED(hrGetProtectionManager))
+				return hrGetProtectionManager;
+
+			// setup host proctection to disallow any threading from partially trusted code.
+			// Why? well, if a thread is allowed to hang indefinitely the command could get stuck.
+			HRESULT hrHostProtection = pHostProtectionManager->SetProtectedCategories(
+				(EApiCategories)(eSynchronization | eSelfAffectingThreading | eSelfAffectingProcessMgmt 
+				| eExternalProcessMgmt | eExternalThreading | eUI));
+			pHostProtectionManager->Release();
+
+			if (FAILED(hrHostProtection))
+				return hrHostProtection;
+
+
 			this->m_lastCLR.assign(strName);
 		}
 		pRtEnum->Release();
@@ -138,13 +196,6 @@ STDMETHODIMP CClrHost::GetHostManager(const IID &RIID, __deref_opt_out_opt void 
 {
 	if (ppvObject == NULL)
 		return E_POINTER;
-
-	if (RIID == IID_IHostGCManager)
-	{
-		*ppvObject = (IHostGCManager*)this;
-		return S_OK;
-	}
-
 
 	*ppvObject = NULL;
 	return E_NOINTERFACE;
@@ -319,6 +370,8 @@ STDMETHODIMP CClrHost::ThreadIsBlockingForSuspension(){ return S_OK; }
 STDMETHODIMP CClrHost::raw_CreateAppDomainForQuery(BSTR FnName, BSTR *pRetVal)
 {
 	IManagedHostPtr pAppMgr = this->GetDefaultManagedHost();
+	auto clrVersion = pAppMgr->GetAssemblyCLRVersion(FnName);
+
 	IManagedHostPtr pNewDomain = pAppMgr->CreateAppDomain(FnName);
 	*pRetVal = (BSTR)pNewDomain->GetAppDomainName;
 	this->m_NewlyCreatedAppDomains[std::wstring(*pRetVal)] = pNewDomain;

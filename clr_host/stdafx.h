@@ -27,6 +27,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <sstream>
 #include <atlbase.h>
 #include <atlcom.h>
 #include <comdef.h>

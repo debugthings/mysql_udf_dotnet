@@ -12,6 +12,16 @@ namespace MySQLHostManager
         {
         }
 
+        [ConfigurationProperty("permissionsets")]
+        [ConfigurationCollection(typeof(MySQLPermissionSets), AddItemName = "permissionset")]
+        public MySQLPermissionSets permissionsetscollection
+        {
+            get
+            {
+                return (MySQLPermissionSets)base["permissionsets"];
+            }
+        }
+
         [ConfigurationProperty("assemblies", IsDefaultCollection = false)]
         [ConfigurationCollection(typeof(MySQLAssemblies), AddItemName = "assembly")]
         public MySQLAssemblies assemblies
@@ -88,6 +98,117 @@ namespace MySQLHostManager
             set
             {
                 this["clrversion"] = value;
+            }
+        }
+        [ConfigurationProperty("permissions")]
+        public string permissions
+        {
+            get
+            {
+                return (string)this["permissions"];
+            }
+            set
+            {
+                this["permissions"] = value;
+            }
+        }
+    }
+
+    class MySQLPermissionSets : ConfigurationElementCollection
+    {
+
+        protected override ConfigurationElement CreateNewElement()
+        {
+            return new MySQLPermissionSet();
+        }
+
+        protected override object GetElementKey(ConfigurationElement element)
+        {
+            return ((MySQLPermissionSet)element).Name;
+        }
+
+        public void Add(MySQLPermissionSet item)
+        {
+            base.BaseAdd(item);
+        }
+
+        new public MySQLPermissionSet this[string Name]
+        {
+            get
+            {
+                return (MySQLPermissionSet)BaseGet(Name);
+            }
+        }
+    }
+
+    class MySQLPermissionSet : ConfigurationElement
+    {
+
+        [ConfigurationProperty("name", IsKey = true, IsRequired = true)]
+        public string Name
+        {
+            get
+            {
+                return (string)this["name"];
+            }
+            set
+            {
+                this["name"] = value;
+            }
+        }
+
+        [ConfigurationProperty("permissions", IsDefaultCollection = false)]
+        [ConfigurationCollection(typeof(MySQLPermissions), AddItemName="add")]
+        public MySQLPermissions permissionscollection
+        {
+            get
+            {
+                return (MySQLPermissions)base["permissions"];
+            }
+        }
+       
+    }
+
+    class MySQLPermissions : ConfigurationElementCollection
+    {
+
+        protected override ConfigurationElement CreateNewElement()
+        {
+            return new MySQLPermission();
+        }
+
+        protected override object GetElementKey(ConfigurationElement element)
+        {
+            return ((MySQLPermission)element).Name;
+        }
+
+        public void Add(MySQLPermission item)
+        {
+            base.BaseAdd(item);
+        }
+
+        new public MySQLPermission this[string Name]
+        {
+            get
+            {
+                return (MySQLPermission)BaseGet(Name);
+            }
+        }
+
+    }
+
+    class MySQLPermission : ConfigurationElement
+    {
+        [ConfigurationProperty("name")]
+        public string Name
+        {
+            get
+            {
+                return (string)this["name"];
+            }
+            set
+            {
+                this["name"] = value;
             }
         }
     }
