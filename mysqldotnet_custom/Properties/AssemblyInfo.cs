@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("mysqldotnet_custom")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Custom MySQL .NET Functions")]
+[assembly: AssemblyDescription("Functions based on the ICustomAssembly interface.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("mysqldotnet_custom")]
+[assembly: AssemblyCompany("www.debugthings.com")]
+[assembly: AssemblyProduct("MySQLCustomClass")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

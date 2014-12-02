@@ -82,7 +82,7 @@ namespace MySQLHostManager
         /// </summary>
         /// <param name="typeName">The name of the type defined in the configuration file.</param>
         /// <returns>A permission set based on the collection of permissions in the defined permission set.</returns>
-        private PermissionSet GetAssemblyPermissions(MySQLAsembly typeName)
+        public PermissionSet GetAssemblyPermissions(MySQLAsembly typeName)
         {
             PermissionSet permissions = new PermissionSet(PermissionState.None);
             permissions.AddPermission(new SecurityPermission(SecurityPermissionFlag.Execution));

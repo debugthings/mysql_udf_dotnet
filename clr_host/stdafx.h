@@ -28,6 +28,7 @@
 #include <map>
 #include <string>
 #include <sstream>
+#include <fstream>
 #include <atlbase.h>
 #include <atlcom.h>
 #include <comdef.h>
@@ -35,8 +36,10 @@
 #include <mscoree.h>
 #ifdef DEBUG
 #import "Debug/MySQLHostManager.tlb" no_namespace
+//#import "Debug/MySQLHostManager40.tlb" no_namespace
 #else
 #import "Release/MySQLHostManager.tlb" no_namespace
+//#import "Release/MySQLHostManager40.tlb" no_namespace
 #endif
 
 #pragma warning (pop)

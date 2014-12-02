@@ -1,5 +1,6 @@
 #include "clr_host\ClrHost.h"
 #pragma comment(lib, "clr_host.lib")
+	
 #include <my_global.h>
 #include <my_sys.h>
 #include <mysql.h>
@@ -58,6 +59,7 @@ _bstr_t RunString(IUnmanagedHostPtr &pClr, _bstr_t &functionName, std::string &i
 void errorMessage(const _com_error &e, char* message, BOOL isInit)
 {
 
+	auto hmod = LoadLibrary("C:\\Windows\\Microsoft.NET\\Framework\\v2.0.50727\\mscorrc.dll");
 	std::stringstream errMessage;
 	if (isInit)
 		errMessage << "Unable to start CLR!";
@@ -69,7 +71,15 @@ void errorMessage(const _com_error &e, char* message, BOOL isInit)
 	{
 		errMessage << " : " << e.Description();
 	}
-	errMessage << std::endl;
+	else {
+		
+		auto ecode = e.Error() & ~(0x80130000);
+		char strBuff[512];
+		auto hr = LoadString(hmod, ecode + 0x6000, strBuff, 512);
+		errMessage << " : " << strBuff;
+		
+	}
+	errMessage  << std::endl;
 
 	ZeroMemory(message, MYSQL_ERRMSG_SIZE); // Need to clear out buffer to hold entire message
 
@@ -82,7 +92,7 @@ void errorMessage(const _com_error &e, char* message, BOOL isInit)
 		auto l = s.length();
 		strcpy_s(message, l + 2, s.c_str()); // Add 2 because of the end line
 	}
-	
+	FreeLibrary(hmod);
 }
 
 my_bool InitializeCLR(UDF_INIT *initid, UDF_ARGS *args, char *message)
@@ -113,7 +123,7 @@ my_bool InitializeCLR(UDF_INIT *initid, UDF_ARGS *args, char *message)
 				// Create new Appdomain and copy the name to the pointer to be used for the rest of the 
 				// code execution.
 				auto ret = pClrHost->CreateAppDomainForQuery(_bstr_t(args->args[0]));
-				initid->ptr = (char*)ret.copy();
+				initid->ptr = (char*)ret.copy(); // Copy string so it is not lost when out of scope.
 			}
 		}
 		return 0;
@@ -184,7 +194,7 @@ extern "C"
 			*error = 1;
 			return 0;
 		}
-		
+
 	}
 
 	double mysqldotnet_real(UDF_INIT *initid, UDF_ARGS *args, char *is_null,

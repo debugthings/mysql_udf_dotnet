@@ -6,7 +6,7 @@ using System.Configuration;
 namespace MySQLHostManager
 {
 
-    class MySQLAssemblyList : ConfigurationSection
+    public class MySQLAssemblyList : ConfigurationSection
     {
         public MySQLAssemblyList()
         {
@@ -33,7 +33,7 @@ namespace MySQLHostManager
         }
     }
 
-    class MySQLAssemblies : ConfigurationElementCollection
+    public class MySQLAssemblies : ConfigurationElementCollection
     {
 
         protected override ConfigurationElement CreateNewElement()
@@ -60,7 +60,7 @@ namespace MySQLHostManager
         }
     }
 
-    class MySQLAsembly : ConfigurationElement
+    public class MySQLAsembly : ConfigurationElement
     {
          [ConfigurationProperty("name")]
         public string name
@@ -114,7 +114,7 @@ namespace MySQLHostManager
         }
     }
 
-    class MySQLPermissionSets : ConfigurationElementCollection
+    public class MySQLPermissionSets : ConfigurationElementCollection
     {
 
         protected override ConfigurationElement CreateNewElement()
@@ -141,7 +141,7 @@ namespace MySQLHostManager
         }
     }
 
-    class MySQLPermissionSet : ConfigurationElement
+    public class MySQLPermissionSet : ConfigurationElement
     {
 
         [ConfigurationProperty("name", IsKey = true, IsRequired = true)]
@@ -169,7 +169,7 @@ namespace MySQLHostManager
        
     }
 
-    class MySQLPermissions : ConfigurationElementCollection
+    public class MySQLPermissions : ConfigurationElementCollection
     {
 
         protected override ConfigurationElement CreateNewElement()
@@ -197,7 +197,7 @@ namespace MySQLHostManager
 
     }
 
-    class MySQLPermission : ConfigurationElement
+    public class MySQLPermission : ConfigurationElement
     {
         [ConfigurationProperty("name")]
         public string Name

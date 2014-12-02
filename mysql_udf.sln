@@ -12,9 +12,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "clr_host", "clr_host\clr_ho
 		{A15DADAC-D3C8-4226-93CD-2DA7C85F51DC} = {A15DADAC-D3C8-4226-93CD-2DA7C85F51DC}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySQLHostManager", "mysql_managed_interface\MySQLHostManager.csproj", "{A15DADAC-D3C8-4226-93CD-2DA7C85F51DC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySQLHostManager20", "mysql_managed_interface\MySQLHostManager20.csproj", "{A15DADAC-D3C8-4226-93CD-2DA7C85F51DC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySQLCustomClass", "mysqldotnet_custom\MySQLCustomClass.csproj", "{4CBE7806-245F-47C5-9397-944AAB45391E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySQLHostManager40", "MySQLHostManager40\MySQLHostManager40.csproj", "{21427460-AE57-4258-8706-6C35B0774ED8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -112,6 +114,26 @@ Global
 		{4CBE7806-245F-47C5-9397-944AAB45391E}.RelWithDebInfo|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{4CBE7806-245F-47C5-9397-944AAB45391E}.RelWithDebInfo|Mixed Platforms.Build.0 = Release|Any CPU
 		{4CBE7806-245F-47C5-9397-944AAB45391E}.RelWithDebInfo|Win32.ActiveCfg = Release|Any CPU
+		{21427460-AE57-4258-8706-6C35B0774ED8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21427460-AE57-4258-8706-6C35B0774ED8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21427460-AE57-4258-8706-6C35B0774ED8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{21427460-AE57-4258-8706-6C35B0774ED8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{21427460-AE57-4258-8706-6C35B0774ED8}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{21427460-AE57-4258-8706-6C35B0774ED8}.MinSizeRel|Any CPU.ActiveCfg = Release|Any CPU
+		{21427460-AE57-4258-8706-6C35B0774ED8}.MinSizeRel|Any CPU.Build.0 = Release|Any CPU
+		{21427460-AE57-4258-8706-6C35B0774ED8}.MinSizeRel|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{21427460-AE57-4258-8706-6C35B0774ED8}.MinSizeRel|Mixed Platforms.Build.0 = Release|Any CPU
+		{21427460-AE57-4258-8706-6C35B0774ED8}.MinSizeRel|Win32.ActiveCfg = Release|Any CPU
+		{21427460-AE57-4258-8706-6C35B0774ED8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21427460-AE57-4258-8706-6C35B0774ED8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21427460-AE57-4258-8706-6C35B0774ED8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{21427460-AE57-4258-8706-6C35B0774ED8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{21427460-AE57-4258-8706-6C35B0774ED8}.Release|Win32.ActiveCfg = Release|Any CPU
+		{21427460-AE57-4258-8706-6C35B0774ED8}.RelWithDebInfo|Any CPU.ActiveCfg = Release|Any CPU
+		{21427460-AE57-4258-8706-6C35B0774ED8}.RelWithDebInfo|Any CPU.Build.0 = Release|Any CPU
+		{21427460-AE57-4258-8706-6C35B0774ED8}.RelWithDebInfo|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{21427460-AE57-4258-8706-6C35B0774ED8}.RelWithDebInfo|Mixed Platforms.Build.0 = Release|Any CPU
+		{21427460-AE57-4258-8706-6C35B0774ED8}.RelWithDebInfo|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

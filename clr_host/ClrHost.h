@@ -32,7 +32,8 @@ private:
 	CLRRunTimeMap			m_CLRRuntimeMap;
 
 private:
-	static const wchar_t    *AppDomainManagerAssembly;
+	static const wchar_t    *AppDomainManagerAssembly20;
+	static const wchar_t    *AppDomainManagerAssembly40;
 	static const wchar_t    *AppDomainManagerType;
 	std::wstring			m_lastCLR;
 
@@ -43,6 +44,7 @@ public:
 
 protected:
 	HRESULT FinalConstruct();
+	HRESULT SetupCLR(ICLRRuntimeHost *m_pClr, PCWSTR strCmp, PCWSTR version);
 
 public:
 	static HRESULT BindToRuntime(IUnmanagedHost **pHost);
