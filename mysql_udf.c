@@ -1,6 +1,6 @@
 #include "clr_host\ClrHost.h"
 #pragma comment(lib, "clr_host.lib")
-	
+
 #include <my_global.h>
 #include <my_sys.h>
 #include <mysql.h>
@@ -24,7 +24,6 @@
 #define _ATL_APARTMENT_THREADED
 #define _ATL_NO_AUTOMATIC_NAMESPACE
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS
-#define _WINDLL 0
 
 using namespace ATL;
 using namespace std;
@@ -72,14 +71,14 @@ void errorMessage(const _com_error &e, char* message, BOOL isInit)
 		errMessage << " : " << e.Description();
 	}
 	else {
-		
+
 		auto ecode = e.Error() & ~(0x80130000);
 		char strBuff[512];
 		auto hr = LoadString(hmod, ecode + 0x6000, strBuff, 512);
 		errMessage << " : " << strBuff;
-		
+
 	}
-	errMessage  << std::endl;
+	errMessage << std::endl;
 
 	ZeroMemory(message, MYSQL_ERRMSG_SIZE); // Need to clear out buffer to hold entire message
 
@@ -95,27 +94,38 @@ void errorMessage(const _com_error &e, char* message, BOOL isInit)
 	FreeLibrary(hmod);
 }
 
+static CRITICAL_SECTION g_CritSec;
+
 my_bool InitializeCLR(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
+
+	if (g_CritSec.DebugInfo == NULL)
+	{
+		InitializeCriticalSection(&g_CritSec);
+	}
 	if (args->arg_count < 2)
 	{
 		strcpy_s(message, 76, "You must supply at least two parameters. Parameter 1 must be the .NET class.");
+		OutputDebugString(message);
 		return 1;
 	}
 
 	int returnCode = 0;
-	HRESULT hrCoInit = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+	
 
 	try
 	{
+		EnterCriticalSection(&g_CritSec);
 		if (pClrHost == NULL)
 		{
+			HRESULT hrCoInit = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
 			HRESULT hrBind = CClrHost::BindToRuntime(&pClrHost.GetInterfacePtr());
 			if (FAILED(hrBind))
 				_com_raise_error(hrBind);
 			// start it up
 			pClrHost->Start();
 		}
+		LeaveCriticalSection(&g_CritSec);
 		if (args->arg_count > 0)
 		{
 			if (args->arg_type[0] == STRING_RESULT)
@@ -123,15 +133,17 @@ my_bool InitializeCLR(UDF_INIT *initid, UDF_ARGS *args, char *message)
 				// Create new Appdomain and copy the name to the pointer to be used for the rest of the 
 				// code execution.
 				auto ret = pClrHost->CreateAppDomainForQuery(_bstr_t(args->args[0]));
-				initid->ptr = (char*)ret.copy(); // Copy string so it is not lost when out of scope.
+				initid->ptr = (char*)&*ret; // Copy host pointer so it is not lost when out of scope.
 			}
 		}
+
 		return 0;
 
 	}
 	catch (const _com_error &e)
 	{
-		errorMessage(e, message, TRUE);
+		errorMessage(e, message, TRUE);		
+		OutputDebugString(message);
 		return 1;
 	}
 	return 0;
@@ -139,12 +151,15 @@ my_bool InitializeCLR(UDF_INIT *initid, UDF_ARGS *args, char *message)
 
 
 
-
 extern "C"
 {
 	my_bool mysqldotnet_int_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 	{
-		return InitializeCLR(initid, args, message);
+		
+		my_bool ret = InitializeCLR(initid, args, message);
+		
+		return ret;
+
 	}
 
 	my_bool mysqldotnet_real_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
@@ -166,7 +181,7 @@ extern "C"
 		{
 			longlong val = 0;
 			uint i;
-			IManagedHostPtr mhp = pClrHost->GetSpecificManagedHost(BSTR((BSTR*)initid->ptr));
+			IManagedHostPtr mhp = (IManagedHost*)initid->ptr;
 
 			// Start at the second parameter, as the first should be a string that tells us what class to execute.
 			for (i = 1; i < args->arg_count; i++)
@@ -205,7 +220,7 @@ extern "C"
 		{
 			double val = 0;
 			uint i;
-			IManagedHostPtr mhp = pClrHost->GetSpecificManagedHost(BSTR(initid->ptr));
+			IManagedHostPtr mhp = (IManagedHost*)initid->ptr;
 
 			// Start at the second parameter, as the first should be a string that tells us what class to execute.
 			for (i = 1; i < args->arg_count; i++)
@@ -288,16 +303,19 @@ extern "C"
 
 	void mysqldotnet_int_deinit(UDF_INIT *initid)
 	{
-		pClrHost->DefaultManagedHost->Unload(BSTR(initid->ptr));
+		pClrHost->UnloadAppDomain((IManagedHost*)initid->ptr);
+		((IManagedHost*)initid->ptr)->Release();
 	}
 
 	void mysqldotnet_real_deinit(UDF_INIT *initid)
 	{
-		pClrHost->DefaultManagedHost->Unload(BSTR(initid->ptr));
+		pClrHost->UnloadAppDomain((IManagedHost*)initid->ptr);
+		((IManagedHost*)initid->ptr)->Release();
 	}
 
 	void mysqldotnet_string_deinit(UDF_INIT *initid)
 	{
-		pClrHost->DefaultManagedHost->Unload(BSTR(initid->ptr));
+		pClrHost->UnloadAppDomain((IManagedHost*)initid->ptr);
+		((IManagedHost*)initid->ptr)->Release();
 	}
 }

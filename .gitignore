@@ -240,3 +240,7 @@ install_manifest.txt
 Win32
 udf_example.dir
 RelWithDebInfo
+
+# Custom Ignore for Windows Link
+# =========================
+/MySQLHostManager40/MySQLHostManager.cs

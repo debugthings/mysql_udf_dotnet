@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySQLCustomClass", "mysqldo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySQLHostManager40", "MySQLHostManager40\MySQLHostManager40.csproj", "{21427460-AE57-4258-8706-6C35B0774ED8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySQLTestHarness", "MySQLTestHarness\MySQLTestHarness.csproj", "{5FA25495-E051-4950-BCCD-DD5A6751DCB1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -134,6 +136,26 @@ Global
 		{21427460-AE57-4258-8706-6C35B0774ED8}.RelWithDebInfo|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{21427460-AE57-4258-8706-6C35B0774ED8}.RelWithDebInfo|Mixed Platforms.Build.0 = Release|Any CPU
 		{21427460-AE57-4258-8706-6C35B0774ED8}.RelWithDebInfo|Win32.ActiveCfg = Release|Any CPU
+		{5FA25495-E051-4950-BCCD-DD5A6751DCB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FA25495-E051-4950-BCCD-DD5A6751DCB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FA25495-E051-4950-BCCD-DD5A6751DCB1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5FA25495-E051-4950-BCCD-DD5A6751DCB1}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5FA25495-E051-4950-BCCD-DD5A6751DCB1}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{5FA25495-E051-4950-BCCD-DD5A6751DCB1}.MinSizeRel|Any CPU.ActiveCfg = Release|Any CPU
+		{5FA25495-E051-4950-BCCD-DD5A6751DCB1}.MinSizeRel|Any CPU.Build.0 = Release|Any CPU
+		{5FA25495-E051-4950-BCCD-DD5A6751DCB1}.MinSizeRel|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5FA25495-E051-4950-BCCD-DD5A6751DCB1}.MinSizeRel|Mixed Platforms.Build.0 = Release|Any CPU
+		{5FA25495-E051-4950-BCCD-DD5A6751DCB1}.MinSizeRel|Win32.ActiveCfg = Release|Any CPU
+		{5FA25495-E051-4950-BCCD-DD5A6751DCB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FA25495-E051-4950-BCCD-DD5A6751DCB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FA25495-E051-4950-BCCD-DD5A6751DCB1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5FA25495-E051-4950-BCCD-DD5A6751DCB1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{5FA25495-E051-4950-BCCD-DD5A6751DCB1}.Release|Win32.ActiveCfg = Release|Any CPU
+		{5FA25495-E051-4950-BCCD-DD5A6751DCB1}.RelWithDebInfo|Any CPU.ActiveCfg = Release|Any CPU
+		{5FA25495-E051-4950-BCCD-DD5A6751DCB1}.RelWithDebInfo|Any CPU.Build.0 = Release|Any CPU
+		{5FA25495-E051-4950-BCCD-DD5A6751DCB1}.RelWithDebInfo|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5FA25495-E051-4950-BCCD-DD5A6751DCB1}.RelWithDebInfo|Mixed Platforms.Build.0 = Release|Any CPU
+		{5FA25495-E051-4950-BCCD-DD5A6751DCB1}.RelWithDebInfo|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -11,19 +11,38 @@ namespace MySQLHostManager
 {
     class MySQLHostManager : AppDomainManager, IManagedHost
     {
+
+
         private System.Collections.Generic.Dictionary<string, ICustomAssembly> functions = null;
         private System.Collections.Generic.Dictionary<string, AppDomain> activeAppDomains = null;
+        private System.Collections.Generic.Dictionary<string, AppDomain> domainsInUse = null;
+        private static System.Collections.Generic.Dictionary<string, AppDomain> domainsToDie = null;
+        public DateTime FirstAccessed { get; private set; }
+        public DateTime LastAccessed { get; private set; }
         private string currentAppDomainName = String.Empty;
-        GCHandle gchand;
+
+        private static Object objLock = new object();
+        private static Object objToDie = new object();
+        private static Object objConfig = new object();
+        private static System.Timers.Timer removeThread;
+
+        private TimeSpan maxAppDomainCleanup;
+        private DateTime lastAppDomainCleanup;
+
         /// <summary>
         /// Loads the assembly based on the full name. This can obviously be a partialy qualified name.
         /// </summary>
         /// <param name="args">The parameters passed in from our CreateDomain() method.</param>
         static void ADIDelegate(string[] args)
         {
-            var asm = AppDomain.CurrentDomain.Load(args[0]);
 
+#if DOTNET40
+            var asm = Assembly.Load(args[0]);
+#else
+            var asm = AppDomain.CurrentDomain.Load(args[0]);
+#endif
         }
+
 
         public static StrongName CreateStrongName(Assembly assembly)
         {
@@ -66,16 +85,66 @@ namespace MySQLHostManager
 
         private IUnmanagedHost unmanagedInterface = null;
 
+        private void removeDomains(object sender)
+        {
+            if (sender != null)
+            {
+                ((System.Timers.Timer)sender).Stop();
+            }
+
+            try
+            {
+                if (domainsToDie.Count > 0 && (activeAppDomains.Count == 0 || (DateTime.Now - lastAppDomainCleanup) >= maxAppDomainCleanup))
+                {
+
+                    lock (objToDie)
+                    {
+                        System.Collections.Generic.List<string> remove = new System.Collections.Generic.List<string>();
+                        foreach (var item in domainsToDie)
+                        {
+                            try
+                            {
+                                remove.Add(item.Key);
+                                AppDomain.Unload(item.Value);
+                            }
+                            catch (Exception) { /* Do Nothing */ }
+                        }
+                        // The idea here is we can only get a few exceptions; 
+                        // and these exceptions are related to the domain being dead.
+                        domainsToDie.Clear();
+                    }
+                }
+            }
+            finally
+            {
+                if (sender != null)
+                {
+                    ((System.Timers.Timer)sender).Start();
+                }
+            }
+
+        }
         /// <summary>
         ///		A new AppDomain has been created
         /// </summary>
         public override void InitializeNewDomain(AppDomainSetup appDomainInfo)
         {
+
             // let the unmanaged host know about us
             if (AppDomain.CurrentDomain.IsDefaultAppDomain())
             {
+
                 InitializationFlags = AppDomainManagerInitializationOptions.RegisterWithHost;
             }
+        }
+
+        void CurrentDomain_DomainUnload(object sender, EventArgs e)
+        {
+            if (removeThread != null)
+            {
+                removeThread.Dispose();
+            }
+
         }
         /// <summary>
         /// Gets the named permission set from the permissionset collection defined in the configuration file.
@@ -200,16 +269,76 @@ namespace MySQLHostManager
 
         public IManagedHost CreateAppDomain(string typeName)
         {
-
-            if (activeAppDomains == null)
+            if (removeThread == null)
             {
-                activeAppDomains = new System.Collections.Generic.Dictionary<string, AppDomain>();
+                lock (objConfig) // Lock to create the initial check
+                {
+                    if (removeThread == null)
+                    {
+                        var timerSection = System.Configuration.ConfigurationManager.GetSection("mysqlassemblies") as MySQLAssemblyList;
+                        double maxTime = TimeSpan.FromMinutes(5.0).TotalMilliseconds; // Set up our thread timer clock
+                        if (timerSection != null)
+                        {
+                            maxTime = timerSection.appDomainCleanup.interval.TotalMilliseconds;
+                            maxAppDomainCleanup = timerSection.appDomainCleanup.forcedInterval;
+                        }
+
+                        removeThread = new System.Timers.Timer();
+                        removeThread.Interval = maxTime;
+                        removeThread.AutoReset = true;
+                        removeThread.Elapsed += removeThread_Elapsed;
+                        removeThread.Start();
+
+
+                        if (activeAppDomains == null)
+                            activeAppDomains = new System.Collections.Generic.Dictionary<string, AppDomain>();
+
+                        if (domainsInUse == null)
+                            domainsInUse = new System.Collections.Generic.Dictionary<string, AppDomain>();
+
+                        if (domainsToDie == null)
+                            domainsToDie = new System.Collections.Generic.Dictionary<string, AppDomain>();
+                    }
+                }
             }
             // Get the assembly from the config file.
             var section = System.Configuration.ConfigurationManager.GetSection("mysqlassemblies") as MySQLAssemblyList;
             var assemblyName = typeName.Split('.')[0];
             var className = typeName.Split('.')[1];
             var obj = section.assemblies[typeName];
+
+            int maxActiveDomains = 1000; // large number of max simultaneous active domains.
+            if (domainsInUse.Count >= maxActiveDomains)
+            {
+                removeDomains(null);
+            }
+
+            if (activeAppDomains != null && activeAppDomains.Count > 0)
+            {
+                int minuteRefresh = 5;
+                IManagedHost toReturn = null;
+                lock (objLock) // Large lock space to make sure we don't read from the collection while it's being written to.
+                {
+                    foreach (var item in activeAppDomains)
+                    {
+                        // Use the double pipe delimited dictionary entry to only pick the domains for our assembly
+                        if (item.Key.Split(new string[] { "||" }, StringSplitOptions.RemoveEmptyEntries)[0] == typeName
+                            && (DateTime.Now - ((MySQLHostManager)item.Value.DomainManager).LastAccessed).TotalMinutes
+                            < minuteRefresh)
+                        {
+                            if (toReturn == null)
+                            {
+                                if (!domainsInUse.ContainsKey(item.Key))
+                                {
+                                    domainsInUse.Add(item.Key, item.Value); // Add this item back to the in use domains
+                                    return toReturn = (IManagedHost)item.Value.DomainManager;
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             if (obj != null)
             {
@@ -220,26 +349,55 @@ namespace MySQLHostManager
                 ads.AppDomainInitializerArguments = new string[] { obj.fullname, className };
                 ads.ConfigurationFile = "mysqldotnet.config";
                 ads.ApplicationBase = string.Format("{0}..\\", AppDomain.CurrentDomain.SetupInformation.ApplicationBase);
-                ads.PrivateBinPath = "RelWithDebInfo;lib\\plugin"; //TODO make sure this is correct for GA versions, not the compiled versions
+                ads.PrivateBinPath = "lib\\plugin"; //TODO make sure this is correct for GA versions, not the compiled versions
                 ads.ShadowCopyFiles = "true";
 
-                string AppDomainName = DateTime.Now.ToFileTime().ToString();
 
-                var appdomain = AppDomain.CreateDomain(
-                    AppDomainName,
-                    AppDomain.CurrentDomain.Evidence,
-                    ads,
-                    permissions,
-                    CreateStrongName(Assembly.GetExecutingAssembly()));
+                lock (objLock)
+                {
+                    string AppDomainName = string.Format("{0}||{1}", typeName, DateTime.Now.ToFileTime().ToString());
+                    if (activeAppDomains.ContainsKey(assemblyName))
+                    {
+                        AppDomainName = string.Format("{0}||{1}", typeName, (DateTime.Now.ToFileTime() + new Random().Next(1, 10000000)).ToString());
+                    }
 
-                activeAppDomains.Add(AppDomainName, appdomain);
 
-                return (IManagedHost)appdomain.DomainManager;
+                    var appdomain = AppDomain.CreateDomain(
+                        AppDomainName,
+                        AppDomain.CurrentDomain.Evidence,
+                        ads,
+                        permissions,
+                        CreateStrongName(Assembly.GetExecutingAssembly()));
+
+
+                    try
+                    {
+                        ((MySQLHostManager)appdomain.DomainManager).FirstAccessed = DateTime.Now;
+                        ((MySQLHostManager)appdomain.DomainManager).LastAccessed = DateTime.Now;
+                    }
+
+                    catch (Exception) { }
+
+                    // Add our newly minted AppDomain to the proper collections.
+
+
+                    Debug.Assert(!activeAppDomains.ContainsKey(AppDomainName));
+                    Debug.Assert(!domainsInUse.ContainsKey(AppDomainName));
+                    activeAppDomains.Add(AppDomainName, appdomain);
+                    domainsInUse.Add(AppDomainName, appdomain);
+                    return (IManagedHost)appdomain.DomainManager;
+                }
+
             }
 
             // Why throw an exception instead of returning NULL? Well, to be honest it is a shortcut. The fact that we don't have the assembly is
             // not truly an exception, but the fact we can't load the AppDomain is.
             throw new NullReferenceException("Assembly used in MySQL query does not exist. Please check your spelling and make sure it is defined in the config file.");
+        }
+
+        void removeThread_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            removeDomains(sender);
         }
 
         public void Dispose()
@@ -301,24 +459,69 @@ namespace MySQLHostManager
                 if (string.IsNullOrEmpty(currentAppDomainName))
                 {
                     currentAppDomainName = AppDomain.CurrentDomain.FriendlyName;
+
                 }
                 return currentAppDomainName;
             }
         }
 
+        /// <summary>
+        /// No actual domain unloading happens in this method. I do not want to block the return of data to MySQL.
+        /// </summary>
+        /// <param name="FriendlyName"></param>
+        /// <returns></returns>
         public bool Unload(string FriendlyName)
         {
             try
             {
-                if (activeAppDomains.ContainsKey(FriendlyName))
+                string adToRemove = null;
+
+                foreach (var item in domainsInUse)
                 {
-                    AppDomain.Unload(activeAppDomains[FriendlyName]);
-                }
-                else
-                {
-                    return false;
+                    if (!string.IsNullOrEmpty(item.Key) && item.Key == FriendlyName)
+                    {
+                        adToRemove = item.Key;
+                        break;
+                    }
                 }
 
+                if (!string.IsNullOrEmpty(adToRemove))
+                {
+                    try
+                    {
+                        var mysqlhost = domainsInUse[adToRemove].DomainManager as MySQLHostManager;
+                        lock (objLock)
+                        {
+                            if ((DateTime.Now - mysqlhost.FirstAccessed).TotalMinutes > 1)
+                            {
+                                activeAppDomains.Remove(adToRemove); // Take this guy out of the rotation completely
+                                lock (objToDie)
+                                {
+                                    // Set it to die (be unloaded)
+                                    domainsToDie.Add(adToRemove, domainsInUse[adToRemove]);
+                                }
+                            }
+                            if (domainsInUse.ContainsKey(adToRemove))
+                            {
+                                domainsInUse.Remove(adToRemove); // Allow this item to be in the active pool.
+                            }
+                        }
+                    }
+                    catch (AppDomainUnloadedException adEx)
+                    {
+                        lock (objLock)
+                        {
+                            if (activeAppDomains.ContainsKey(adToRemove))
+                            {
+                                activeAppDomains.Remove(adToRemove);
+                            }
+                            if (domainsInUse.ContainsKey(adToRemove))
+                            {
+                                domainsInUse.Remove(adToRemove);
+                            }
+                        }
+                    }
+                }
             }
             catch (Exception)
             {

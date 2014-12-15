@@ -30,8 +30,8 @@ namespace MySQLHostManager
         /// <param name="appDomain">AppDomain ID</param>
         IManagedHost GetManagedHost(int appDomain, string clrVersion);
 
-        IManagedHost GetSpecificManagedHost(string appdomainName);
+        IManagedHost CreateAppDomainForQuery(string FnName);
 
-        string CreateAppDomainForQuery(string FnName);
+        bool UnloadAppDomain(IManagedHost AppDomainName);
     }
 }

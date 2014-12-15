@@ -31,6 +31,15 @@ namespace MySQLHostManager
                 return (MySQLAssemblies)base["assemblies"];
             }
         }
+
+        [ConfigurationProperty("appDomainCleanup")]
+        public MySQLAppDomainCleanup appDomainCleanup
+        {
+            get
+            {
+                return (MySQLAppDomainCleanup)base["appDomainCleanup"];
+            }
+        }
     }
 
     public class MySQLAssemblies : ConfigurationElementCollection
@@ -62,7 +71,7 @@ namespace MySQLHostManager
 
     public class MySQLAsembly : ConfigurationElement
     {
-         [ConfigurationProperty("name")]
+        [ConfigurationProperty("name")]
         public string name
         {
             get
@@ -158,7 +167,7 @@ namespace MySQLHostManager
         }
 
         [ConfigurationProperty("permissions", IsDefaultCollection = false)]
-        [ConfigurationCollection(typeof(MySQLPermissions), AddItemName="add")]
+        [ConfigurationCollection(typeof(MySQLPermissions), AddItemName = "add")]
         public MySQLPermissions permissionscollection
         {
             get
@@ -166,7 +175,7 @@ namespace MySQLHostManager
                 return (MySQLPermissions)base["permissions"];
             }
         }
-       
+
     }
 
     public class MySQLPermissions : ConfigurationElementCollection
@@ -211,5 +220,35 @@ namespace MySQLHostManager
                 this["name"] = value;
             }
         }
+    }
+
+    public class MySQLAppDomainCleanup : ConfigurationElement
+    {
+        [ConfigurationProperty("interval", IsKey = true, IsRequired = true)]
+        public TimeSpan interval
+        {
+            get
+            {
+                return (TimeSpan)this["interval"];
+            }
+            set
+            {
+                this["interval"] = value;
+            }
+        }
+
+        [ConfigurationProperty("forcedInterval", IsKey = true, IsRequired = true)]
+        public TimeSpan forcedInterval
+        {
+            get
+            {
+                return (TimeSpan)this["forcedInterval"];
+            }
+            set
+            {
+                this["forcedInterval"] = value;
+            }
+        }
+
     }
 }

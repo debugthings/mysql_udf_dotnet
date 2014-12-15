@@ -31,8 +31,6 @@ CADMHostModule _AtlModule;
 
 CClrHost::CClrHost() : m_started(false), m_pClrControl(NULL)
 {
-
-
 	return;
 }
 
@@ -41,13 +39,13 @@ CClrHost::CClrHost() : m_started(false), m_pClrControl(NULL)
 /// </summary>
 CClrHost::~CClrHost()
 {
-	// free the AppDomainManagers
-	for (AppDomainManagerMap::iterator iAdm = m_appDomainManagers.begin(); iAdm != m_appDomainManagers.end(); iAdm++)
-		iAdm->second->Release();
+	//// free the AppDomainManagers
+	//for (AppDomainManagerMap::iterator iAdm = m_appDomainManagers.begin(); iAdm != m_appDomainManagers.end(); iAdm++)
+	//	iAdm->second->Release();
 
-	// release the CLR
-	if (m_pClrControl != NULL)
-		m_pClrControl->Release();
+	//// release the CLR
+	//if (m_pClrControl != NULL)
+	//	m_pClrControl->Release();
 	return;
 }
 
@@ -154,7 +152,6 @@ HRESULT CClrHost::FinalConstruct()
 	// Enumeration example from COM books.
 
 	bool runtimesLoaded = false;
-	//pMetaHost->EnumerateLoadedRuntimes(GetCurrentProcess(), &pRtEnum);
 
 	WCHAR strName[MAXSTRING];
 	DWORD len = MAXSTRING;
@@ -164,6 +161,10 @@ HRESULT CClrHost::FinalConstruct()
 
 
 	pMetaHost->EnumerateLoadedRuntimes(GetCurrentProcess(), &pRtEnum);
+	if (pRtEnum == NULL)
+	{
+		return E_POINTER;
+	}
 	while ((hr = pRtEnum->Next(1, (IUnknown **)&info, &fetched)) == S_OK && fetched > 0)
 	{
 		// If the runtime is loaded in MySQL already, then we may not have control over it.
@@ -407,29 +408,6 @@ STDMETHODIMP CClrHost::raw_GetManagedHost(long appDomain, BSTR clr, IManagedHost
 	}
 }
 
-STDMETHODIMP CClrHost::raw_GetSpecificManagedHost(BSTR clr, IManagedHost **ppHost)
-{
-	_ASSERTE(m_started);
-
-	if (ppHost == NULL)
-		return E_POINTER;
-
-	// get the AppDomainManager for the specified domain
-	auto iHost = m_NewlyCreatedAppDomains[clr];
-
-	// see if we've got a host
-	if (iHost == NULL)
-	{
-		*ppHost = NULL;
-		return E_NOMANAGEDHOST;
-	}
-	else
-	{
-		*ppHost = iHost;
-		(*ppHost)->AddRef();
-		return S_OK;
-	}
-}
 
 
 // IHostGCManager
@@ -437,13 +415,31 @@ STDMETHODIMP CClrHost::SuspensionEnding(DWORD generation){ return S_OK; }
 STDMETHODIMP CClrHost::SuspensionStarting(){ return S_OK; }
 STDMETHODIMP CClrHost::ThreadIsBlockingForSuspension(){ return S_OK; }
 
-STDMETHODIMP CClrHost::raw_CreateAppDomainForQuery(BSTR FnName, BSTR *pRetVal)
+STDMETHODIMP CClrHost::raw_CreateAppDomainForQuery(BSTR FnName, IManagedHost **ppHost)
 {
 	IManagedHostPtr pAppMgr = this->GetDefaultManagedHost();
 	auto clrVersion = pAppMgr->GetAssemblyCLRVersion(FnName);
 	auto domManager = this->m_appDomainManagers[std::wstring(clrVersion)];
 	IManagedHostPtr pNewDomain = domManager->CreateAppDomain(FnName);
-	*pRetVal = (BSTR)pNewDomain->GetAppDomainName;
-	this->m_NewlyCreatedAppDomains[std::wstring(*pRetVal)] = pNewDomain;
+	*ppHost = pNewDomain;
+	(*ppHost)->AddRef();
+	// Check to see if the appdmain stored in our default domain is one we have a ref to.
 	return S_OK;
+}
+
+STDMETHODIMP CClrHost::raw_UnloadAppDomain(IManagedHost * managedHost, VARIANT_BOOL * pRetVal)
+{
+	try
+	{
+		auto appdomainName = managedHost->GetAppDomainName;
+		auto appDomainCLR = managedHost->GetCLR();
+		// We're good to access this map since we're not writing to it once we've bound the CLRs
+		this->m_appDomainManagers[std::wstring(appDomainCLR)]->Unload(appdomainName);
+	}
+	catch (const _com_error &e)
+	{
+		// I'm alright with there being nothing here.
+	}
+	return S_OK;
+
 }
