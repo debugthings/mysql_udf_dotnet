@@ -11,7 +11,25 @@ namespace MySQLHostManager
 {
     class MySQLHostManager : AppDomainManager, IManagedHost
     {
-
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        public class MEMORYSTATUSEX
+        {
+            public uint dwLength;
+            public uint dwMemoryLoad;
+            public ulong ullTotalPhys;
+            public ulong ullAvailPhys;
+            public ulong ullTotalPageFile;
+            public ulong ullAvailPageFile;
+            public ulong ullTotalVirtual;
+            public ulong ullAvailVirtual;
+            public ulong ullAvailExtendedVirtual;
+            public MEMORYSTATUSEX()
+            {
+                this.dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX));
+            }
+        }
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool GlobalMemoryStatusEx([In, Out] MEMORYSTATUSEX buffer);
 
         private System.Collections.Generic.Dictionary<string, ICustomAssembly> functions = null;
         private System.Collections.Generic.Dictionary<string, AppDomain> activeAppDomains = null;
@@ -19,15 +37,76 @@ namespace MySQLHostManager
         private static System.Collections.Generic.Dictionary<string, AppDomain> domainsToDie = null;
         public DateTime FirstAccessed { get; private set; }
         public DateTime LastAccessed { get; private set; }
+        public bool ReadyToDie
+        {
+            get
+            {
+                if (AppDomainLifetime != null && (DateTime.Now - FirstAccessed) > AppDomainLifetime)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
         private string currentAppDomainName = String.Empty;
 
         private static Object objLock = new object();
         private static Object objToDie = new object();
         private static Object objConfig = new object();
         private static System.Timers.Timer removeThread;
+        private System.IO.FileSystemWatcher configFileWatcher;
 
         private TimeSpan maxAppDomainCleanup;
+        private TimeSpan AppDomainLifetime;
         private DateTime lastAppDomainCleanup;
+        private DateTime fileWatcherPurge = DateTime.MinValue;
+
+
+
+        public MySQLHostManager()
+        {
+
+
+        }
+
+        void configFileWatcher_Changed(object sender, FileSystemEventArgs e)
+        {
+            fileWatcherPurge = DateTime.Now;
+            System.Configuration.ConfigurationManager.RefreshSection("mysqlassemblies");
+
+            System.Collections.Generic.Dictionary<string, AppDomain> domainsToKill =
+                     new System.Collections.Generic.Dictionary<string, AppDomain>();
+            lock (objLock)
+            {
+                // Create a list of domains to kill
+                foreach (var item in activeAppDomains)
+                {
+                    if ((item.Value.DomainManager as MySQLHostManager).FirstAccessed < fileWatcherPurge)
+                    {
+                        domainsToKill.Add(item.Key, item.Value);
+                    }
+
+                }
+                // Doing this in two loops to avoid optimization and loop unrolling issues
+                foreach (var item in domainsToKill)
+                {
+                    activeAppDomains.Remove(item.Key);
+                    lock (objToDie)
+                    {
+                        domainsToDie.Add(item.Key, item.Value);
+                    }
+                }
+
+            }
+            domainsToKill.Clear();
+
+        }
+
+        void configFileWatcher_ChangedSubDomain(object sender, FileSystemEventArgs e)
+        {
+            // Cheap way to unload the domain next time around
+            FirstAccessed = DateTime.MinValue;
+        }
 
         /// <summary>
         /// Loads the assembly based on the full name. This can obviously be a partialy qualified name.
@@ -85,16 +164,29 @@ namespace MySQLHostManager
 
         private IUnmanagedHost unmanagedInterface = null;
 
-        private void removeDomains(object sender)
+        private void removeDomains(object sender, bool forced = false)
         {
-            if (sender != null)
-            {
-                ((System.Timers.Timer)sender).Stop();
-            }
 
             try
             {
-                if (domainsToDie.Count > 0 && (activeAppDomains.Count == 0 || (DateTime.Now - lastAppDomainCleanup) >= maxAppDomainCleanup))
+                // If we start getting a lot of memory pressure we should force an unload of AppDomains
+                MEMORYSTATUSEX msEX = new MEMORYSTATUSEX();
+                if (GlobalMemoryStatusEx(msEX))
+                {
+                    forced = msEX.dwMemoryLoad > 90 ? true : false;
+                }
+
+
+                if (sender != null)
+                {
+                    ((System.Timers.Timer)sender).Stop();
+                }
+
+                // We should be a friendly here and not agressively bog the system down unless specific criteria are met
+                // We can force the collection if we've hit our time limit, or we have another specified reason (forced)
+                if (domainsToDie.Count > 0 && (activeAppDomains.Count == 0
+                    || (DateTime.Now - lastAppDomainCleanup) >= maxAppDomainCleanup)
+                    || forced)
                 {
 
                     lock (objToDie)
@@ -112,6 +204,7 @@ namespace MySQLHostManager
                         // The idea here is we can only get a few exceptions; 
                         // and these exceptions are related to the domain being dead.
                         domainsToDie.Clear();
+                        lastAppDomainCleanup = DateTime.Now;
                     }
                 }
             }
@@ -135,6 +228,16 @@ namespace MySQLHostManager
             {
 
                 InitializationFlags = AppDomainManagerInitializationOptions.RegisterWithHost;
+            }
+            else
+            {
+
+                if (configFileWatcher == null)
+                    configFileWatcher = new System.IO.FileSystemWatcher(AppDomain.CurrentDomain.BaseDirectory, "mysqldotnet.config");
+                configFileWatcher.Changed += configFileWatcher_Changed;
+                configFileWatcher.EnableRaisingEvents = true;
+                // Set the lifetime of this AppDomain based on the lifetime attribute for the assembly
+                TimeSpan.TryParse(appDomainInfo.AppDomainInitializerArguments[2], out AppDomainLifetime);
             }
         }
 
@@ -269,45 +372,57 @@ namespace MySQLHostManager
 
         public IManagedHost CreateAppDomain(string typeName)
         {
-            if (removeThread == null)
+
+
+            if (AppDomain.CurrentDomain.IsDefaultAppDomain())
             {
-                lock (objConfig) // Lock to create the initial check
+
+                if (removeThread == null)
                 {
-                    if (removeThread == null)
+                    var timerSection = System.Configuration.ConfigurationManager.GetSection("mysqlassemblies") as MySQLAssemblyList;
+                    double maxTime = TimeSpan.FromMinutes(5.0).TotalMilliseconds; // Set up our thread timer clock
+                    if (timerSection != null)
                     {
-                        var timerSection = System.Configuration.ConfigurationManager.GetSection("mysqlassemblies") as MySQLAssemblyList;
-                        double maxTime = TimeSpan.FromMinutes(5.0).TotalMilliseconds; // Set up our thread timer clock
-                        if (timerSection != null)
-                        {
-                            maxTime = timerSection.appDomainCleanup.interval.TotalMilliseconds;
-                            maxAppDomainCleanup = timerSection.appDomainCleanup.forcedInterval;
-                        }
-
-                        removeThread = new System.Timers.Timer();
-                        removeThread.Interval = maxTime;
-                        removeThread.AutoReset = true;
-                        removeThread.Elapsed += removeThread_Elapsed;
-                        removeThread.Start();
-
-
-                        if (activeAppDomains == null)
-                            activeAppDomains = new System.Collections.Generic.Dictionary<string, AppDomain>();
-
-                        if (domainsInUse == null)
-                            domainsInUse = new System.Collections.Generic.Dictionary<string, AppDomain>();
-
-                        if (domainsToDie == null)
-                            domainsToDie = new System.Collections.Generic.Dictionary<string, AppDomain>();
+                        maxTime = timerSection.appDomainCleanup.interval.TotalMilliseconds;
+                        maxAppDomainCleanup = timerSection.appDomainCleanup.forcedInterval;
                     }
+
+                    removeThread = new System.Timers.Timer();
+                    removeThread.Interval = maxTime;
+                    removeThread.AutoReset = true;
+                    removeThread.Elapsed += removeThread_Elapsed;
+                    removeThread.Start();
+
+
+                    if (activeAppDomains == null)
+                        activeAppDomains = new System.Collections.Generic.Dictionary<string, AppDomain>();
+
+                    if (domainsInUse == null)
+                        domainsInUse = new System.Collections.Generic.Dictionary<string, AppDomain>();
+
+                    if (domainsToDie == null)
+                        domainsToDie = new System.Collections.Generic.Dictionary<string, AppDomain>();
+
+                    if (configFileWatcher == null)
+                        configFileWatcher = new System.IO.FileSystemWatcher(AppDomain.CurrentDomain.BaseDirectory, "mysqld.exe.config");
+                    configFileWatcher.Changed += configFileWatcher_Changed;
+                    configFileWatcher.EnableRaisingEvents = true;
                 }
             }
+
+
             // Get the assembly from the config file.
             var section = System.Configuration.ConfigurationManager.GetSection("mysqlassemblies") as MySQLAssemblyList;
             var assemblyName = typeName.Split('.')[0];
             var className = typeName.Split('.')[1];
             var obj = section.assemblies[typeName];
 
-            int maxActiveDomains = 1000; // large number of max simultaneous active domains.
+            var lifetime = "00:10:00"; // Default of 10 minutes, apply configuration based lifetimes in order
+            lifetime = section.appDomainCleanup.defaultLifetime == TimeSpan.Parse("00:00:00") ? lifetime : section.appDomainCleanup.defaultLifetime.ToString();
+            lifetime = obj.lifetime == TimeSpan.Parse("00:00:00") ? lifetime : obj.lifetime.ToString(); // Object level always overrides defauts
+
+            int maxActiveDomains = section.appDomainCleanup.maxAllowableDomains == 0 ? 1000 : section.appDomainCleanup.maxAllowableDomains;
+            // large number of max simultaneous active domains.
             if (domainsInUse.Count >= maxActiveDomains)
             {
                 removeDomains(null);
@@ -315,27 +430,33 @@ namespace MySQLHostManager
 
             if (activeAppDomains != null && activeAppDomains.Count > 0)
             {
-                int minuteRefresh = 5;
                 IManagedHost toReturn = null;
-                lock (objLock) // Large lock space to make sure we don't read from the collection while it's being written to.
+                if (System.Threading.Monitor.TryEnter(objLock,10)) // Large lock space to make sure we don't read from the collection while it's being written to.
                 {
-                    foreach (var item in activeAppDomains)
+                    try
                     {
-                        // Use the double pipe delimited dictionary entry to only pick the domains for our assembly
-                        if (item.Key.Split(new string[] { "||" }, StringSplitOptions.RemoveEmptyEntries)[0] == typeName
-                            && (DateTime.Now - ((MySQLHostManager)item.Value.DomainManager).LastAccessed).TotalMinutes
-                            < minuteRefresh)
+                        foreach (var item in activeAppDomains)
                         {
-                            if (toReturn == null)
+                            // Use the double pipe delimited dictionary entry to only pick the domains for our assembly
+                            if (item.Key.Split(new string[] { "||" }, StringSplitOptions.RemoveEmptyEntries)[0] == typeName
+                                && !((MySQLHostManager)item.Value.DomainManager).ReadyToDie)
                             {
-                                if (!domainsInUse.ContainsKey(item.Key))
+                                if (toReturn == null)
                                 {
-                                    domainsInUse.Add(item.Key, item.Value); // Add this item back to the in use domains
-                                    return toReturn = (IManagedHost)item.Value.DomainManager;
+                                    if (!domainsInUse.ContainsKey(item.Key))
+                                    {
+                                        domainsInUse.Add(item.Key, item.Value); // Add this item back to the in use domains
+                                        return toReturn = (IManagedHost)item.Value.DomainManager;
 
+                                    }
                                 }
                             }
                         }
+                    }
+                    finally
+                    {
+                        System.Threading.Monitor.PulseAll(objLock);
+                        System.Threading.Monitor.Exit(objLock);
                     }
                 }
             }
@@ -346,10 +467,11 @@ namespace MySQLHostManager
 
                 AppDomainSetup ads = new AppDomainSetup();
                 ads.AppDomainInitializer = ADIDelegate;
-                ads.AppDomainInitializerArguments = new string[] { obj.fullname, className };
+                ads.AppDomainInitializerArguments = new string[] { obj.fullname, className, lifetime };
                 ads.ConfigurationFile = "mysqldotnet.config";
-                ads.ApplicationBase = string.Format("{0}..\\", AppDomain.CurrentDomain.SetupInformation.ApplicationBase);
-                ads.PrivateBinPath = "lib\\plugin"; //TODO make sure this is correct for GA versions, not the compiled versions
+                ads.ApplicationBase = string.Format("{0}..\\lib\\plugin", AppDomain.CurrentDomain.SetupInformation.ApplicationBase);
+                //ads.PrivateBinPath = "lib\\plugin"; //TODO make sure this is correct for GA versions, not the compiled versions
+                //ads.PrivateBinPathProbe = "";
                 ads.ShadowCopyFiles = "true";
 
 
@@ -373,7 +495,6 @@ namespace MySQLHostManager
                     try
                     {
                         ((MySQLHostManager)appdomain.DomainManager).FirstAccessed = DateTime.Now;
-                        ((MySQLHostManager)appdomain.DomainManager).LastAccessed = DateTime.Now;
                     }
 
                     catch (Exception) { }
@@ -492,7 +613,8 @@ namespace MySQLHostManager
                         var mysqlhost = domainsInUse[adToRemove].DomainManager as MySQLHostManager;
                         lock (objLock)
                         {
-                            if ((DateTime.Now - mysqlhost.FirstAccessed).TotalMinutes > 1)
+                            // The AppDomainmanager will calculate based on the first accessed time.
+                            if (mysqlhost.ReadyToDie)
                             {
                                 activeAppDomains.Remove(adToRemove); // Take this guy out of the rotation completely
                                 lock (objToDie)
@@ -507,7 +629,7 @@ namespace MySQLHostManager
                             }
                         }
                     }
-                    catch (AppDomainUnloadedException adEx)
+                    catch (AppDomainUnloadedException)
                     {
                         lock (objLock)
                         {

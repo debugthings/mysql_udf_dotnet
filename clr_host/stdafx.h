@@ -35,11 +35,17 @@
 #include <tchar.h>
 #include <mscoree.h>
 #ifdef DEBUG
-#import "Debug/MySQLHostManager.tlb" no_namespace
-//#import "Debug/MySQLHostManager40.tlb" no_namespace
+#if _WIN64
+#import "x64/Debug/MySQLHostManager.tlb" no_namespace
 #else
-#import "Release/MySQLHostManager.tlb" no_namespace
-//#import "Release/MySQLHostManager40.tlb" no_namespace
+#import "x86/Debug/MySQLHostManager.tlb" no_namespace
+#endif
+#else
+#if _WIN64
+#import "x64/Release/MySQLHostManager.tlb" no_namespace
+#else
+#import "x86/Release/MySQLHostManager.tlb" no_namespace
+#endif
 #endif
 
 #pragma warning (pop)

@@ -443,3 +443,8 @@ STDMETHODIMP CClrHost::raw_UnloadAppDomain(IManagedHost * managedHost, VARIANT_B
 	return S_OK;
 
 }
+
+STDMETHODIMP CClrHost::OnMemoryNotification(EMemoryAvailable eMemoryAvailable)
+{
+	return S_OK;
+}

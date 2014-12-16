@@ -10,13 +10,15 @@ _COM_SMARTPTR_TYPEDEF(IErrorInfo, __uuidof(IErrorInfo));
 class ATL_NO_VTABLE CClrHost : public CComObjectRootEx<CComSingleThreadModel>,
 	public IHostControl,
 	public IHostGCManager,
-	public IUnmanagedHost
+	public IUnmanagedHost,
+	public ICLRMemoryNotificationCallback
 {
 protected:
 	BEGIN_COM_MAP(CClrHost)
 		COM_INTERFACE_ENTRY(IHostControl)
 		COM_INTERFACE_ENTRY(IHostGCManager)
 		COM_INTERFACE_ENTRY(IUnmanagedHost)
+		COM_INTERFACE_ENTRY(ICLRMemoryNotificationCallback)
 	END_COM_MAP()
 	DECLARE_PROTECT_FINAL_CONSTRUCT()
 
@@ -70,6 +72,10 @@ public:
 	STDMETHODIMP SuspensionEnding(DWORD generation);
 	STDMETHODIMP SuspensionStarting();
 	STDMETHODIMP ThreadIsBlockingForSuspension();
+
+	// ICLRMemoryNotificationCallback
+public:
+	STDMETHODIMP OnMemoryNotification(EMemoryAvailable eMemoryAvailable);
 };
 
 // we don't have an AppDomainManager for the specified domain

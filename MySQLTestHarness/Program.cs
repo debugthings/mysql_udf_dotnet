@@ -12,7 +12,7 @@ namespace MySQLTestHarness
         static object objLock = new object();
         static void Main(string[] args)
         {
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 5; i++)
             {
 
                 var tp = System.Threading.ThreadPool.QueueUserWorkItem(RunQueries);

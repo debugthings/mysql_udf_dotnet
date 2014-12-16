@@ -1,5 +1,7 @@
+
 #include "clr_host\ClrHost.h"
 #pragma comment(lib, "clr_host.lib")
+
 
 #include <my_global.h>
 #include <my_sys.h>
@@ -111,7 +113,7 @@ my_bool InitializeCLR(UDF_INIT *initid, UDF_ARGS *args, char *message)
 	}
 
 	int returnCode = 0;
-	
+
 
 	try
 	{
@@ -142,7 +144,7 @@ my_bool InitializeCLR(UDF_INIT *initid, UDF_ARGS *args, char *message)
 	}
 	catch (const _com_error &e)
 	{
-		errorMessage(e, message, TRUE);		
+		errorMessage(e, message, TRUE);
 		OutputDebugString(message);
 		return 1;
 	}
@@ -155,9 +157,9 @@ extern "C"
 {
 	my_bool mysqldotnet_int_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 	{
-		
+
 		my_bool ret = InitializeCLR(initid, args, message);
-		
+
 		return ret;
 
 	}

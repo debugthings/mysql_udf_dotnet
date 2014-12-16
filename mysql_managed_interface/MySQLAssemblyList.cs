@@ -121,6 +121,19 @@ namespace MySQLHostManager
                 this["permissions"] = value;
             }
         }
+
+        [ConfigurationProperty("lifetime", DefaultValue = "00:10:00")]
+        public TimeSpan lifetime
+        {
+            get
+            {
+                return (TimeSpan)this["lifetime"];
+            }
+            set
+            {
+                this["lifetime"] = value;
+            }
+        }
     }
 
     public class MySQLPermissionSets : ConfigurationElementCollection
@@ -224,7 +237,7 @@ namespace MySQLHostManager
 
     public class MySQLAppDomainCleanup : ConfigurationElement
     {
-        [ConfigurationProperty("interval", IsKey = true, IsRequired = true)]
+        [ConfigurationProperty("interval", DefaultValue = "00:01:00")]
         public TimeSpan interval
         {
             get
@@ -237,7 +250,7 @@ namespace MySQLHostManager
             }
         }
 
-        [ConfigurationProperty("forcedInterval", IsKey = true, IsRequired = true)]
+        [ConfigurationProperty("forcedInterval", DefaultValue = "06:00:00")]
         public TimeSpan forcedInterval
         {
             get
@@ -247,6 +260,33 @@ namespace MySQLHostManager
             set
             {
                 this["forcedInterval"] = value;
+            }
+        }
+
+        [ConfigurationProperty("defaultLifetime", DefaultValue = "00:10:00")]
+        public TimeSpan defaultLifetime
+        {
+            get
+            {
+                return (TimeSpan)this["defaultLifetime"];
+            }
+            set
+            {
+                this["defaultLifetime"] = value;
+            }
+        }
+
+        [ConfigurationProperty("maxAllowableDomains", DefaultValue = "1000")]
+        [IntegerValidator(MinValue = 20, MaxValue = int.MaxValue)] // Why impose a MinValue? This keeps people from creating a slow environment
+        public int maxAllowableDomains
+        {
+            get
+            {
+                return (int)this["maxAllowableDomains"];
+            }
+            set
+            {
+                this["maxAllowableDomains"] = value;
             }
         }
 
