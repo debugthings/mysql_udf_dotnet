@@ -4,12 +4,12 @@
 
   <Product Id="*" Name="MySQL .NET UDF" Language="1033" Version="1.0.0.0" Manufacturer="James Davis, www.debugthings.com"
            UpgradeCode="a4d9eaa0-947d-4442-a124-78a7f3ed4815"  >
-    <Package InstallerVersion="405" Compressed="yes" InstallScope="perMachine" 
+    <Package InstallerVersion="405" Compressed="yes" InstallScope="perMachine"
              Platform="x64"  Description="MySQL .NET UDF" Manufacturer="www.debugthings.com"  />
     <Property Id="ARPURLINFOABOUT" Value="https://github.com/jldgit/mysql_udf_dotnet" />
     <Property Id="ARPURLUPDATEINFO" Value="http://www.debugthings.com/mysql" />
     <Property Id="ARPSIZE" Value="1024" />
-    
+
 
     <?define CustomText="Use this to install MySQL .NET UDF to a custom location. Use the browse button below to select the directory." ?>
     <?define InstallText50="Installs the MySQL .NET UDF plugin to the MySQL 5.0 installation directory and the .NET Assemblies into the GAC." ?>
@@ -108,7 +108,7 @@
     <Feature Id="VCRedist12x64" Title="Visual C++ 12.0 Runtime (64-bit)" AllowAdvertise="no" Display="hidden" Level="1">
       <MergeRef Id="VCRedistx64"/>
     </Feature>
-    
+
     <Feature Id="ProductFeature" Title="MySQL .NET UDF" Level="1" Display="expand" Description="$(var.MainDesc)">
       <Feature Id="DotNet20Assemblies" Level="0" Display="hidden" >
         <Component Id="cmp_MySQLHostManager20"  Guid="{F158CF0A-C7D3-4521-A376-2E71A0B9A8EB}" Directory="GAC35">
@@ -194,17 +194,6 @@
         <Condition Level="1">  <![CDATA[NOT MYSQLVERSION OR NOT MYSQLVERSION64]]></Condition>
       </Feature>
     </Feature>
-
-    <!--<Feature Id="ProductSamples" Title="Samples" Level="1">
-      <Feature Id="SimpleExample" Title="Simple .NET Example" Level="2" >
-        <ComponentGroupRef Id="cmpgrp_Default" />
-        <ComponentGroupRef Id="cmpgrp_Default" />
-      </Feature>
-      <Feature Id="CompledExample" Title="Complex .NET Example" Level="2">
-        <ComponentGroupRef Id="cmpgrp_Default" />
-        <ComponentGroupRef Id="cmpgrp_Default" />
-      </Feature>
-    </Feature>-->
   </Product>
 
 
@@ -317,66 +306,11 @@
             </Directory>
           </Directory>
         </Directory>
+        <Directory Id="MYSQLUDF" Name="MySQL .NET UDF"></Directory>
       </Directory>
     </Directory>
   </Fragment>
 
-  <!--<Fragment>
-    <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="ProgramFiles64Folder">
-        <Directory Id="MYSQLFOLDER_64" Name="MySQL">
-          <Directory Id="MYSQLVER50_64" Name="MySQL Server 5.0">
-            <Directory Id="BIN50_64" Name="bin" />
-            <Directory Id="LIB50_64" Name="lib">
-              <Directory Id="PLUGIN50_64" Name="plugin" />
-            </Directory>
-          </Directory>
-          <Directory Id="MYSQLVER51_64" Name="MySQL Server 5.1">
-            <Directory Id="BIN51_64" Name="bin" />
-            <Directory Id="LIB51_64" Name="lib">
-              <Directory Id="PLUGIN51_64" Name="plugin" />
-            </Directory>
-          </Directory>
-          <Directory Id="MYSQLVER52_64" Name="MySQL Server 5.2">
-            <Directory Id="BIN52_64" Name="bin" />
-            <Directory Id="LIB52_64" Name="lib">
-              <Directory Id="PLUGIN52_64" Name="plugin" />
-            </Directory>
-          </Directory>
-          <Directory Id="MYSQLVER53_64" Name="MySQL Server 5.3">
-            <Directory Id="BIN53_64" Name="bin" />
-            <Directory Id="LIB53_64" Name="lib">
-              <Directory Id="PLUGIN53_64" Name="plugin" />
-            </Directory>
-          </Directory>
-          <Directory Id="MYSQLVER54_64" Name="MySQL Server 5.4">
-            <Directory Id="BIN54_64" Name="bin" />
-            <Directory Id="LIB54_64" Name="lib">
-              <Directory Id="PLUGIN54_64" Name="plugin" />
-            </Directory>
-          </Directory>
-          <Directory Id="MYSQLVER55_64" Name="MySQL Server 5.5">
-            <Directory Id="BIN55_64" Name="bin" />
-            <Directory Id="LIB55_64" Name="lib">
-              <Directory Id="PLUGIN55_64" Name="plugin" />
-            </Directory>
-          </Directory>
-          <Directory Id="MYSQLVER56_64" Name="MySQL Server 5.6">
-            <Directory Id="BIN56_64" Name="bin" />
-            <Directory Id="LIB56_64" Name="lib">
-              <Directory Id="PLUGIN56_64" Name="plugin" />
-            </Directory>
-          </Directory>
-          <Directory Id="MYSQLVER57_64" Name="MySQL Server 5.7">
-            <Directory Id="BIN57_64" Name="bin" />
-            <Directory Id="LIB57_64" Name="lib">
-              <Directory Id="PLUGIN57_64" Name="plugin" />
-            </Directory>
-          </Directory>
-        </Directory>
-      </Directory>
-    </Directory>
-  </Fragment>-->
 
   <Fragment>
     <Component Id="cmp_MySQLConfig"  Guid="*"  Directory="BIN50">
@@ -394,7 +328,7 @@
     <ComponentGroup Id="cmpgrp_MySQL50" Directory="PLUGIN50">
       <ComponentRef Id="cmp_MySQLPlugin" />
     </ComponentGroup>
-    <ComponentGroup Id="cmpgrp_MySQL50_64" Directory="PLUGIN50">
+    <ComponentGroup Id="cmpgrp_MySQL50_64" Directory="PLUGIN50_64">
       <ComponentRef Id="cmp_MySQLPlugin_64" />
     </ComponentGroup>
 
@@ -408,7 +342,7 @@
     <ComponentGroup Id="cmpgrp_MySQL51" Directory="PLUGIN51">
       <ComponentRef Id="cmp_MySQLPlugin" />
     </ComponentGroup>
-    <ComponentGroup Id="cmpgrp_MySQL51_64" Directory="PLUGIN51">
+    <ComponentGroup Id="cmpgrp_MySQL51_64" Directory="PLUGIN51_64">
       <ComponentRef Id="cmp_MySQLPlugin_64" />
     </ComponentGroup>
 
@@ -422,7 +356,7 @@
     <ComponentGroup Id="cmpgrp_MySQL55" Directory="PLUGIN55">
       <ComponentRef Id="cmp_MySQLPlugin" />
     </ComponentGroup>
-    <ComponentGroup Id="cmpgrp_MySQL55_64" Directory="PLUGIN55">
+    <ComponentGroup Id="cmpgrp_MySQL55_64" Directory="PLUGIN55_64">
       <ComponentRef Id="cmp_MySQLPlugin_64" />
     </ComponentGroup>
 
@@ -437,7 +371,7 @@
     <ComponentGroup Id="cmpgrp_MySQL56" Directory="PLUGIN56">
       <ComponentRef Id="cmp_MySQLPlugin" />
     </ComponentGroup>
-    <ComponentGroup Id="cmpgrp_MySQL56_64" Directory="PLUGIN56">
+    <ComponentGroup Id="cmpgrp_MySQL56_64" Directory="PLUGIN56_64">
       <ComponentRef Id="cmp_MySQLPlugin_64" />
     </ComponentGroup>
 
@@ -452,7 +386,7 @@
     <ComponentGroup Id="cmpgrp_MySQL57" Directory="PLUGIN57">
       <ComponentRef Id="cmp_MySQLPlugin" />
     </ComponentGroup>
-    <ComponentGroup Id="cmpgrp_MySQL57_64" Directory="PLUGIN57">
+    <ComponentGroup Id="cmpgrp_MySQL57_64" Directory="PLUGIN57_64">
       <ComponentRef Id="cmp_MySQLPlugin_64" />
     </ComponentGroup>
 
@@ -462,9 +396,6 @@
     <ComponentGroup Id="cmpgrp_MySQL57Config_64" Directory="BIN57_64">
       <ComponentRef Id="cmp_MySQLConfig" />
     </ComponentGroup>
-
-
-
 
   </Fragment>
 </Wix>
