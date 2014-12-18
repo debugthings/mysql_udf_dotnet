@@ -34,6 +34,7 @@
 #include <comdef.h>
 #include <tchar.h>
 #include <mscoree.h>
+#include <locale>
 #ifdef DEBUG
 #if _WIN64
 #import "x64/Debug/MySQLHostManager.tlb" no_namespace

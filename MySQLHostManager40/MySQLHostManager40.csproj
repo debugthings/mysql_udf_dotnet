@@ -67,7 +67,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -100,7 +100,7 @@
 </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>IF EXIST MySQLHostManager.cs ( echo "Link Exists") ELSE (mklink MySQLHostManager.cs ..\mysql_managed_interface\MySQLHostManager.cs)</PreBuildEvent>
+    <PreBuildEvent>IF EXIST $(ProjectDir)MySQLHostManager.cs ( echo "Link Exists") ELSE (mklink $(ProjectDir)MySQLHostManager.cs $(SolutionDir)\mysql_managed_interface\MySQLHostManager.cs)</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
