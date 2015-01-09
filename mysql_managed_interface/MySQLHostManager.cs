@@ -258,10 +258,19 @@ namespace MySQLHostManager
         {
             PermissionSet permissions = new PermissionSet(PermissionState.None);
             permissions.AddPermission(new SecurityPermission(SecurityPermissionFlag.Execution));
-
-            if (!string.IsNullOrEmpty(typeName.permissions))
+            string permissionSetName = string.Empty;
+            if (string.IsNullOrEmpty(typeName.permissions))
             {
-                if (typeName.permissions.Equals("fulltrust", StringComparison.InvariantCultureIgnoreCase))
+                permissionSetName = "MySQLPartial";
+            }
+            else
+            {
+                permissionSetName = typeName.permissions;
+            }
+            if (!string.IsNullOrEmpty(permissionSetName))
+            {
+
+                if (permissionSetName.Equals("fulltrust", StringComparison.InvariantCultureIgnoreCase))
                 {
                     // override the default permission set with a full trust permission set.
                     permissions = new PermissionSet(PermissionState.Unrestricted);
@@ -270,7 +279,7 @@ namespace MySQLHostManager
                 {
                     var section2 = System.Configuration.ConfigurationManager.GetSection("mysqlassemblies") as MySQLAssemblyList;
                     var permlists = section2.permissionsetscollection;
-                    var permlist = permlists[typeName.permissions];
+                    var permlist = permlists[permissionSetName];
 
                     // For now we're adding all of the permissions out of the box for System, System.Configuration, System.Data. and System.Xml
                     // This is heavy handed, but aides in beta testing. By the end we should have pared this down to a handful of useful permissions
@@ -279,6 +288,7 @@ namespace MySQLHostManager
                     {
                         switch (permission.Name)
                         {
+
                             case "AspNetHostingPermission": permissions.AddPermission(new System.Web.AspNetHostingPermission(PermissionState.Unrestricted)); break;
                             //case "Collaboration": permissions.AddPermission(new System.Net.PeerToPeer.Collaboration.PeerCollaborationPermission(PermissionState.Unrestricted));
                             //    break;
@@ -431,7 +441,7 @@ namespace MySQLHostManager
             if (activeAppDomains != null && activeAppDomains.Count > 0)
             {
                 IManagedHost toReturn = null;
-                if (System.Threading.Monitor.TryEnter(objLock,10)) // Large lock space to make sure we don't read from the collection while it's being written to.
+                if (System.Threading.Monitor.TryEnter(objLock, 10)) // Large lock space to make sure we don't read from the collection while it's being written to.
                 {
                     try
                     {
@@ -676,7 +686,6 @@ namespace MySQLHostManager
             InitFunctions(functionName);
             return functions[functionName].RunReals(values);
         }
-
         public string RunString(string functionName, string value)
         {
             InitFunctions(functionName);
@@ -690,5 +699,28 @@ namespace MySQLHostManager
         }
 
         #endregion
+
+
+
+
+        public string MultiKeyword
+        {
+            get
+            {
+                var section2 = System.Configuration.ConfigurationManager.GetSection("mysqlassemblies") as MySQLAssemblyList;
+                var permlists = section2.applicationDefaults;
+                return permlists.multikeyword;
+            }
+        }
+
+        public int DefaultCodepage
+        {
+            get
+            {
+                var section2 = System.Configuration.ConfigurationManager.GetSection("mysqlassemblies") as MySQLAssemblyList;
+                var permlists = section2.applicationDefaults;
+                return permlists.codepage;
+            }
+        }
     }
 }

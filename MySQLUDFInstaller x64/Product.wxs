@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
-     xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+     xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" >
 
   <Product Id="*" Name="MySQL .NET UDF" Language="1033" Version="1.0.0.0" Manufacturer="James Davis, www.debugthings.com"
-           UpgradeCode="a4d9eaa0-947d-4442-a124-78a7f3ed4815"  >
+           UpgradeCode="a4d9eaa0-947d-4442-a124-78a7f3ed4815">
     <Package InstallerVersion="405" Compressed="yes" InstallScope="perMachine"
-             Platform="x64"  Description="MySQL .NET UDF" Manufacturer="www.debugthings.com"  />
+             Platform="x64"  Description="MySQL .NET UDF" Manufacturer="www.debugthings.com"   />
     <Property Id="ARPURLINFOABOUT" Value="https://github.com/jldgit/mysql_udf_dotnet" />
     <Property Id="ARPURLUPDATEINFO" Value="http://www.debugthings.com/mysql" />
     <Property Id="ARPSIZE" Value="1024" />

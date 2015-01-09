@@ -93,8 +93,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="generic_signing.snk" />
+    <None Include="mysqld.exe.config_full">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="mysqld.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

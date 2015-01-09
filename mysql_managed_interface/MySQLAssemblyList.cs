@@ -40,6 +40,15 @@ namespace MySQLHostManager
                 return (MySQLAppDomainCleanup)base["appDomainCleanup"];
             }
         }
+
+         [ConfigurationProperty("applicationDefaults")]
+        public MySQLDefaultSettings applicationDefaults
+        {
+            get
+            {
+                return (MySQLDefaultSettings)base["applicationDefaults"];
+            }
+        }
     }
 
     public class MySQLAssemblies : ConfigurationElementCollection
@@ -287,6 +296,36 @@ namespace MySQLHostManager
             set
             {
                 this["maxAllowableDomains"] = value;
+            }
+        }
+
+    }
+
+    public class MySQLDefaultSettings : ConfigurationElement
+    {
+        [ConfigurationProperty("codepage", DefaultValue = 1252)]
+        public int codepage
+        {
+            get
+            {
+                return (int)this["codepage"];
+            }
+            set
+            {
+                this["codepage"] = value;
+            }
+        }
+
+        [ConfigurationProperty("multikeyword", DefaultValue = "MULTI")]
+        public string multikeyword
+        {
+            get
+            {
+                return (string)this["multikeyword"];
+            }
+            set
+            {
+                this["multikeyword"] = value;
             }
         }
 

@@ -4,19 +4,31 @@
     <section name ="mysqlassemblies" type="MySQLHostManager.MySQLAssemblyList, 
              MySQLHostManager, Version=2.0.0.0, Culture=neutral, PublicKeyToken=71c4a5d4270bd29c"/>
   </configSections>
-  
+
   <startup>
     <supportedRuntime version="v4.0"/>
   </startup>
-  
+
   <mysqlassemblies>
+
     <permissionsets>
+      <!--MySQL Partial is a built in type that can be overriden. All types in here will be appended to the
+      execute permission that is granted to all assemblies by default.-->
       <permissionset name="MySQLPartial">
         <permissions>
           <add name="FileIOPermission" />
         </permissions>
       </permissionset>
-      <!---->
+
+      <permissionset name="MySQLWebClient">
+        <permissions>
+          <add name="FileIOPermission" />
+          <add name="WebPermission" />
+        </permissions>
+      </permissionset>
+
+      <!--FullTrust is a builtin type and you cannot redefine it.-->
+
     </permissionsets>
 
     <!-- Cycle every five minutes. Force recycle every 24 hours if none have occured -->
@@ -26,23 +38,16 @@
       interval="0.00:05:00"
       forcedInterval="1.00:00:00" />
 
-    <!--These are the default settings that can be overridden.-->
-    <applicationDefaults 
-      codepage="1252"
-      multikeyword="MULTI" />
-    
     <assemblies>
-      <!--No specific permission set assigned to this assembly; uses default (MySQLPartial)-->
-      <assembly name="MySQLCustomClass.CustomMySQLClass" fullname ="MySQLCustomClass, 
-                Version=1.0.0.0, PublicKeyToken=a55d172c54d273f4" clrversion="4.0" lifetime="02:00:00"/>
-      
-      <assembly name="MySQLCustomClass.PointsInRadius" fullname ="MySQLCustomClass, 
+      <!--No specific permission set assigned to this assembly; uses default -->
+      <assembly name="MySQLCustomClass.Add3ToIntCustom" fullname ="MySQLCustomClass, 
                 Version=1.0.0.0, PublicKeyToken=a55d172c54d273f4" clrversion="4.0" lifetime="02:00:00"/>
 
       <!--FullTrust Granted to this assembly-->
       <assembly name="MySQLCustomClass.FullTrustAssemblyDemo" fullname ="MySQLCustomClass, 
                 Version=1.0.0.0, PublicKeyToken=a55d172c54d273f4" clrversion="v2.0"
                 permissions="FullTrust"/>
+
       <!--MySQLPartial Granted to this assembly-->
       <assembly name="MySQLCustomClass.PartialTrustAssemblyDemo" fullname ="MySQLCustomClass, 
                 Version=1.0.0.0, PublicKeyToken=a55d172c54d273f4"

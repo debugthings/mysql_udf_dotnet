@@ -39,6 +39,8 @@ CClrHost::CClrHost() : m_started(false), m_pClrControl(NULL)
 /// </summary>
 CClrHost::~CClrHost()
 {
+	
+
 	//// free the AppDomainManagers
 	//for (AppDomainManagerMap::iterator iAdm = m_appDomainManagers.begin(); iAdm != m_appDomainManagers.end(); iAdm++)
 	//	iAdm->second->Release();

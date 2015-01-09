@@ -77,6 +77,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Device" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -84,9 +85,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomMySQLClass.cs" />
-    <Compile Include="FullTrustAssemblyDemo.cs" />
-    <Compile Include="PartialTrustAssemblyDemo.cs" />
+    <Compile Include="Add3ToIntCustom.cs" />
+    <Compile Include="PointsInRadius.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

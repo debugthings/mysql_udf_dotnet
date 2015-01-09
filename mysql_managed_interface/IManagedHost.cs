@@ -33,8 +33,9 @@ namespace MySQLHostManager
         double RunReal(string functionName, double value);
         double RunReals(string functionName, double[] values);
 
-
+        [return: MarshalAs(UnmanagedType.BStr)]
         string RunString(string functionName, string value);
+        [return: MarshalAs(UnmanagedType.BStr)]
         string RunStrings(string functionName, string[] values);
 
         [return: MarshalAs(UnmanagedType.BStr)]
@@ -45,6 +46,9 @@ namespace MySQLHostManager
         string GetAppDomainName { get; }
 
         bool Unload(string FriendlyName);
+
+        string MultiKeyword { get;  }
+        int DefaultCodepage { get; }
     }
 
 }

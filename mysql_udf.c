@@ -6,6 +6,8 @@
 #include <my_global.h>
 #include <my_sys.h>
 #include <mysql.h>
+#include <map>
+#include <vector>
 
 #ifndef STRICT
 #  define STRICT
@@ -39,6 +41,11 @@ This is a staticly linked class that is compiled into this UDF to avoid having t
 */
 IUnmanagedHostPtr pClrHost = NULL;
 
+auto stringMap = new std::map<std::wstring, std::vector<char*>>();
+
+char* g_multikeyword = nullptr;
+int g_codepage = 0;
+
 longlong RunInteger(IManagedHostPtr &pClr, _bstr_t &functionName, longlong input)
 {
 	return pClr->RunInteger(functionName, input);
@@ -49,11 +56,94 @@ double RunReal(IManagedHostPtr &pClr, _bstr_t &functionName, double input)
 	return pClr->RunReal(functionName, input);
 }
 
-_bstr_t RunString(IUnmanagedHostPtr &pClr, _bstr_t &functionName, std::string &input)
+_bstr_t RunString(IManagedHostPtr &pClr, _bstr_t &functionName, char *input, int size, int *codepage)
 {
-	// Get the default managed host
-	IManagedHostPtr pManagedHost = pClr->DefaultManagedHost;
-	return pManagedHost->RunString(functionName, _bstr_t(input.c_str()));
+	if (*codepage == 0)
+	{
+		*codepage = g_codepage;
+	}
+	int sizeplusterm = size + 1;
+	wchar_t* buffer = new wchar_t[sizeplusterm] {};
+	int unicodecheck = IS_TEXT_UNICODE_UNICODE_MASK | IS_TEXT_UNICODE_REVERSE_MASK;
+	IsTextUnicode(input, size, &unicodecheck);
+	if ((unicodecheck > 0) | (*codepage == CP_WINUNICODE))
+	{
+		for (int i = 0, j = 0; i < size / 2; i++, j += 2)
+		{
+			buffer[i] |= (((wchar_t)input[j]) << 0x8) | ((wchar_t)(input[j + 1]));
+		}
+	}
+	else {
+		MultiByteToWideChar(*codepage, NULL, input, size, buffer, sizeplusterm);
+	}
+	return pClr->RunString(functionName, buffer);
+}
+
+longlong RunIntegers(IManagedHostPtr &pClr, _bstr_t &functionName, longlong* input, int args)
+{
+	SAFEARRAYBOUND rgsabound[1];
+	rgsabound[0].lLbound = 0;
+	rgsabound[0].cElements = args;
+	SAFEARRAY* sa = SafeArrayCreate(VT_I8, 1, rgsabound);
+	SafeArrayLock(sa);
+	sa->pvData = input;
+	SafeArrayUnlock(sa);
+	return pClr->RunIntegers(functionName, sa);
+}
+
+double RunReals(IManagedHostPtr &pClr, _bstr_t &functionName, double* input, int args)
+{
+	SAFEARRAYBOUND rgsabound[1];
+	rgsabound[0].lLbound = 0;
+	rgsabound[0].cElements = args;
+	SAFEARRAY* sa = SafeArrayCreate(VT_R8, 1, rgsabound);
+	SafeArrayLock(sa);
+	sa->pvData = input;
+	SafeArrayUnlock(sa);
+	return pClr->RunReals(functionName, sa);
+}
+
+_bstr_t RunStrings(IManagedHostPtr &pClr, _bstr_t &functionName, char** input, unsigned long *lengths, uint args, int *codepage)
+{
+	int codepageIndex = 2;
+	if (*codepage != 0)
+	{
+		++codepageIndex; // Increase index if we have an explicit code page.
+	}
+	else
+	{
+		*codepage = g_codepage; // If there is no code page we fall back to the default.
+	}
+
+
+	SAFEARRAYBOUND rgsabound[1];
+	rgsabound[0].lLbound = 0;
+	rgsabound[0].cElements = args - (codepageIndex - 1);
+	SAFEARRAY* sa = SafeArrayCreate(VT_BSTR, 1, rgsabound);
+	HRESULT hr = SafeArrayLock(sa);
+	for (uint ix = codepageIndex; ix <= args; ix++)
+	{
+		int txtLen = lengths[ix] + 1;
+		auto txt = new wchar_t[txtLen] {};
+		int unicodecheck = IS_TEXT_UNICODE_UNICODE_MASK | IS_TEXT_UNICODE_REVERSE_MASK;
+		IsTextUnicode(input[ix], lengths[ix], &unicodecheck);
+		if ((unicodecheck > 0) | (*codepage == CP_WINUNICODE))
+		{
+			for (size_t i = 0, j = 0; i < lengths[ix] / 2; i++, j += 2)
+			{
+				txt[i] |= (((wchar_t)input[j]) << 0x8) | ((wchar_t)(input[j + 1]));
+			}
+		}
+		else {
+			MultiByteToWideChar(*codepage, NULL, input[ix], lengths[ix], txt, txtLen);
+		}
+		((BSTR*)sa->pvData)[ix - codepageIndex] = SysAllocString(txt);
+		delete txt;
+	}
+	hr = SafeArrayUnlock(sa);
+	auto retstring = pClr->RunStrings(functionName, sa);
+	SafeArrayDestroy(sa);
+	return retstring;
 }
 
 // Create the proper error message to let MySQL know the UDF failed.
@@ -126,6 +216,16 @@ my_bool InitializeCLR(UDF_INIT *initid, UDF_ARGS *args, char *message)
 				_com_raise_error(hrBind);
 			// start it up
 			pClrHost->Start();
+			if (g_codepage != 0)
+			{
+				g_codepage = pClrHost->GetDefaultManagedHost()->GetDefaultCodepage();
+			}
+			if (g_multikeyword == nullptr)
+			{
+				_bstr_t multikeyword = _bstr_t(pClrHost->GetDefaultManagedHost()->GetMultiKeyword());
+				g_multikeyword = new char[multikeyword.length() + 1] {};
+				WideCharToMultiByte(CP_UTF8, NULL, multikeyword, -1, g_multikeyword, multikeyword.length(), NULL, NULL);
+			}
 		}
 		LeaveCriticalSection(&g_CritSec);
 		if (args->arg_count > 0)
@@ -135,7 +235,9 @@ my_bool InitializeCLR(UDF_INIT *initid, UDF_ARGS *args, char *message)
 				// Create new Appdomain and copy the name to the pointer to be used for the rest of the 
 				// code execution.
 				auto ret = pClrHost->CreateAppDomainForQuery(_bstr_t(args->args[0]));
+				auto name = std::wstring(ret->GetAppDomainName);
 				initid->ptr = (char*)&*ret; // Copy host pointer so it is not lost when out of scope.
+				stringMap->insert(std::pair<std::wstring, std::vector<char*>>(name, std::vector<char*>()));
 			}
 		}
 
@@ -151,13 +253,38 @@ my_bool InitializeCLR(UDF_INIT *initid, UDF_ARGS *args, char *message)
 	return 0;
 }
 
+template<typename _type>
+_type getIntegerForArray(char* arg, Item_result type)
+{
+	switch (type) {
+	case INT_RESULT:			/* Add numbers */
+		return (_type)*((longlong*)arg);
+		break;
+	case REAL_RESULT:			/* Add numers as longlong */
+		return (_type)*((double*)arg);
+		break;
+	case STRING_RESULT:
+		return (_type)strlen(arg);
+		break;
+	default:
+		return 0;
+		break;
+	}
+}
+
 
 
 extern "C"
 {
 	my_bool mysqldotnet_int_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 	{
-
+		for (size_t i = 0; i < args->arg_count; i++)
+		{
+			if (args->arg_type[i] == DECIMAL_RESULT)
+			{
+				args->arg_type[i] = REAL_RESULT;
+			}
+		}
 		my_bool ret = InitializeCLR(initid, args, message);
 
 		return ret;
@@ -166,11 +293,25 @@ extern "C"
 
 	my_bool mysqldotnet_real_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 	{
+		for (size_t i = 0; i < args->arg_count; i++)
+		{
+			if (args->arg_type[i] == DECIMAL_RESULT)
+			{
+				args->arg_type[i] = REAL_RESULT;
+			}
+		}
 		return InitializeCLR(initid, args, message);
 	}
 
 	my_bool mysqldotnet_string_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 	{
+		for (size_t i = 0; i < args->arg_count; i++)
+		{
+			if (args->arg_type[i] == DECIMAL_RESULT)
+			{
+				args->arg_type[i] = REAL_RESULT;
+			}
+		}
 		return InitializeCLR(initid, args, message);
 	}
 
@@ -184,20 +325,43 @@ extern "C"
 			longlong val = 0;
 			uint i;
 			IManagedHostPtr mhp = (IManagedHost*)initid->ptr;
-
+			char* argName = args->args[0];
+			++args->args;
+			++args->arg_type;
 			// Start at the second parameter, as the first should be a string that tells us what class to execute.
-			for (i = 1; i < args->arg_count; i++)
+			for (i = 0; i < args->arg_count - 1; i++)
 			{
+				BOOL stopLoop = FALSE;
 				if (args->args[i] == NULL)
 					continue;
 				switch (args->arg_type[i]) {
 				case INT_RESULT:			/* Add numbers */
-					val += RunInteger(mhp, _bstr_t(args->args[0]), *((longlong*)args->args[i]));
+					val += RunInteger(mhp, _bstr_t(argName), *((longlong*)args->args[i]));
 					break;
 				case REAL_RESULT:			/* Add numers as longlong */
-					val += RunInteger(mhp, _bstr_t(args->args[0]), *((longlong*)args->args[i]));
+					val += RunInteger(mhp, _bstr_t(argName), *((longlong*)args->args[i]));
+					break;
+				case STRING_RESULT:
+					if (strcmp((char*)args->args[i], g_multikeyword) == 0)
+					{
+						++args->args;
+						++args->arg_type;
+						longlong* longArray = new longlong[args->arg_count - 2];
+						for (size_t j = 0; j < args->arg_count - 2; j++)
+						{
+							longArray[j] = getIntegerForArray<longlong>(args->args[j], args->arg_type[j]);
+						}
+						val += RunIntegers(mhp, _bstr_t(argName), longArray, args->arg_count - 2);
+						delete[] longArray;
+						stopLoop = TRUE;
+					}
+
 					break;
 				default:
+					break;
+				}
+				if (stopLoop == TRUE)
+				{
 					break;
 				}
 			}
@@ -224,21 +388,37 @@ extern "C"
 			uint i;
 			IManagedHostPtr mhp = (IManagedHost*)initid->ptr;
 
+			char* argName = args->args[0];
+			++args->args;
+			++args->arg_type;
+
 			// Start at the second parameter, as the first should be a string that tells us what class to execute.
-			for (i = 1; i < args->arg_count; i++)
+			for (i = 0; i < args->arg_count - 1; i++)
 			{
+				BOOL stopLoop = FALSE;
 				if (args->args[i] == NULL)
 					continue;
 				switch (args->arg_type[i]) {
-				case STRING_RESULT:			/* Add string lengths */
-					val += args->lengths[i];
-					break;
 				case INT_RESULT:			/* Add numbers */
-					val += (double)RunInteger(mhp, _bstr_t(args->args[0]), *((longlong*)args->args[i]));
+					val += (double)RunReal(mhp, _bstr_t(argName), *((longlong*)args->args[i]));
 					break;
 				case REAL_RESULT:			/* Add numers as longlong */
-					val += RunReal(mhp, _bstr_t(args->args[0]), *((double*)args->args[i]));
+					val += RunReal(mhp, _bstr_t(argName), *((double*)args->args[i]));
 					break;
+				case STRING_RESULT:
+					if (strcmp((char*)args->args[i], g_multikeyword) == 0)
+					{
+						++args->args;
+						++args->arg_type;
+						double* longArray = new double[args->arg_count - 2];
+						for (size_t j = 0; j < args->arg_count - 2; j++)
+						{
+							longArray[j] = getIntegerForArray<double>(args->args[j], args->arg_type[j]);
+						}
+						val = RunReals(mhp, _bstr_t(argName), longArray, args->arg_count - 2);
+						delete[] longArray;
+						return val;
+					}
 				default:
 					break;
 				}
@@ -256,38 +436,95 @@ extern "C"
 		return 0;
 	}
 
-	char* mysqldotnet_string(UDF_INIT *initid __attribute__((unused)),
+	char  *mysqldotnet_string(UDF_INIT *initid __attribute__((unused)),
 		UDF_ARGS *args, char *result, unsigned long *length,
 		char *is_null, char *error __attribute__((unused)))
 	{
 		try
 		{
+			ZeroMemory(result, *length);
 			uint i;
+			long lastlen = 0;
 			std::string stringResult;
-
+			IManagedHostPtr mhp = (IManagedHost*)initid->ptr;
+			_bstr_t argName = _bstr_t(args->args[0]);
+			_bstr_t ptrCpy = _bstr_t();
+			long len = 0;
+			std::string s;
+			int codepage = 0;
 			// Start at the second parameter, as the first should be a string that tells us what class to execute.
 			for (i = 1; i < args->arg_count; i++)
 			{
+				BOOL stopLoop = FALSE;
 				stringResult.clear();
+				BOOL useUnicode = FALSE;
 				if (args->args[i] == NULL)
 					continue;
-				switch (args->arg_type[i]) {
-				case STRING_RESULT:			/* Add string lengths */
-					stringResult.assign((LPCSTR)RunString(pClrHost, _bstr_t(args->args[0]), std::string(args->args[i])));
-					strcpy_s(result, stringResult.length(), stringResult.c_str());
-					break;
-				case INT_RESULT:
-					stringResult.assign((LPCSTR)RunString(pClrHost, _bstr_t(args->args[0]), std::to_string(*(longlong*)args->args[i])));
-					strcpy_s(result, stringResult.length(), stringResult.c_str());
-					break;
-				case REAL_RESULT:			/* Add numers as longlong */
-					stringResult.assign((LPCSTR)RunString(pClrHost, _bstr_t(args->args[0]), std::to_string(*(double*)args->args[i])));
-					strcpy_s(result, stringResult.length(), stringResult.c_str());
-					break;
-				default:
-					break;
+				if (args->arg_type[i] == STRING_RESULT) {
+					if ((strcmp((char*)args->args[i], g_multikeyword) == 0) & ((i == 1) || (codepage > 0 & i == 2)))
+					{
+						// If multi is in the first position then we are MULTI valued
+						// If multi is in the second position and the code page is set then we are multivalued
+						ptrCpy = RunStrings(mhp, argName, args->args, args->lengths, args->arg_count - 1, &codepage);
+						stopLoop = TRUE;
+					}
+					else {
+						ptrCpy = RunString(mhp, argName, args->args[i], args->lengths[i], &codepage);
+					}
+					len = ptrCpy.length(); // Hard limit at 1MB string
+					lastlen = len;
+
+					char* buffer = new char[len + 1] {};
+					lastlen = len + 1;
+					WideCharToMultiByte(CP_UTF8, NULL, ptrCpy, -1, buffer, lastlen, NULL, NULL);
+					ulong bufferSize = strlen(buffer) * sizeof(char);
+					lastlen = bufferSize;
+
+					if (bufferSize <= *length)
+					{
+						memcpy_s(result, *length, buffer, lastlen);
+						delete buffer;
+					}
+					else
+					{
+						auto map = stringMap->at(std::wstring(mhp->GetAppDomainName));
+						map.push_back(buffer);
+						result = buffer;
+					}
+					if (stopLoop == TRUE)
+					{
+						*length = lastlen;
+						return result;
+					}
+				}
+				else if (INT_RESULT) {
+
+					if (i == 1)
+					{
+						codepage = *(int*)args->args[i];
+						continue; // If it's the first argument then we need to set the code page
+					}
+					s = std::to_string(*(longlong*)args->args[i]);
+					stringResult.assign((LPCSTR)RunString(mhp, argName, (char*)s.c_str(), s.length(), &codepage));
+
+					strcpy_s(result, *length, stringResult.c_str());
+					if (*length >= stringResult.length())
+					{
+						lastlen = stringResult.length();
+					}
+				}
+				else if (REAL_RESULT) {
+					/* Add numers as longlong */
+					s = std::to_string(*(double*)args->args[i]);
+					stringResult.assign((LPCSTR)RunString(mhp, argName, (char*)s.c_str(), s.length(), &codepage));
+					strcpy_s(result, *length, stringResult.c_str());
+					if (*length >= stringResult.length())
+					{
+						lastlen = stringResult.length();
+					}
 				}
 			}
+			*length = lastlen;
 			return result;
 			// run the application
 		}
@@ -317,6 +554,12 @@ extern "C"
 
 	void mysqldotnet_string_deinit(UDF_INIT *initid)
 	{
+		auto mhp = (IManagedHost*)initid->ptr;
+		auto map = stringMap->at(std::wstring(mhp->GetAppDomainName));
+		for (auto &it : map)
+		{
+			delete it;
+		}
 		pClrHost->UnloadAppDomain((IManagedHost*)initid->ptr);
 		((IManagedHost*)initid->ptr)->Release();
 	}
