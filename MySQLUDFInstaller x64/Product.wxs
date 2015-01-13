@@ -25,6 +25,8 @@
     <?define InstallText57_64="Installs the 64-bit MySQL .NET UDF plugin to the MySQL 5.7 installation directory and the .NET Assemblies into the GAC." ?>
     <?define MainDesc="This base package will install the MySQL .NET UDF native plugin as well as the proper host managers and config files."?>
 
+    <?define SamplesText="Installs the samples explained in the README file, MySQLCustomClass.dll to get you started." ?>
+
     <Property Id="MYSQLVERSION">
       <DirectorySearch Id="Pro" Path="[ProgramFilesFolder]">
         <DirectorySearch Id="MySQL" Path="MySQL" />
@@ -36,11 +38,19 @@
         <DirectorySearch Id="MySQL64" Path="MySQL" />
       </DirectorySearch>
     </Property>
+    
 
     <Condition Message="In order to use the MySQL .NET UDF you must have .NET 2.0 or greater installed. Please visit http://www.microsoft.com/net to download the latest version. The installer will exit now.">
       <![CDATA[NOT NETFRAMEWORK20 AND NOT NETFRAMEWORK40]]>
     </Condition>
 
+    <Property Id="HASNET20">
+      <![CDATA[NETFRAMEWORK20]]>
+    </Property>
+
+    <Property Id="HASNET40">
+      <![CDATA[NETFRAMEWORK40]]>
+    </Property>
     <!--START 64bit Version Checks-->
     <Property Id="MYSQLVERSION64_50">
       <DirectorySearchRef  Id="MySQL64" Parent="Pro64" Path="MySQL">
@@ -110,20 +120,20 @@
     </Feature>
 
     <Feature Id="ProductFeature" Title="MySQL .NET UDF" Level="1" Display="expand" Description="$(var.MainDesc)">
-      <Feature Id="DotNet20Assemblies" Level="0" Display="hidden" >
+      <Feature Id="DotNet20Assemblies" Level="1" Display="hidden">
         <Component Id="cmp_MySQLHostManager20"  Guid="{F158CF0A-C7D3-4521-A376-2E71A0B9A8EB}" Directory="GAC35">
-          <File  Id="fil_MySQLHostManager20" KeyPath="yes" Assembly=".net"  Source="C:\Users\James\Source\Repos\mysql_udf\mysql_managed_interface\bin\Debug\MySQLHostManager.dll" />
+          <File  Id="fil_MySQLHostManager20" KeyPath="yes" Assembly=".net"  Source="..\mysql_managed_interface\bin\Release\MySQLHostManager.dll"  />
         </Component>
-        <Condition Level="1">
-          <![CDATA[NETFRAMEWORK20]]>
+        <Condition Level="0">
+          <![CDATA[NOT HASNET20]]>
         </Condition>
       </Feature>
-      <Feature Id="DotNet40Assemblies" Level="0" Display="hidden" >
+      <Feature Id="DotNet40Assemblies" Level="1" Display="hidden">
         <Component Id="cmp_MySQLHostManager40"  Guid="{BA5E51B5-5CE0-41C1-93E4-A5D10499B1E4}" Directory="GAC40">
-          <File  Id="fil_MySQLHostManager40" KeyPath="yes" Assembly=".net"  Source="C:\Users\James\Source\Repos\mysql_udf\MySQLHostManager40\bin\Debug\MySQLHostManager.dll" />
+          <File  Id="fil_MySQLHostManager40" KeyPath="yes" Assembly=".net"  Source="..\MySQLHostManager40\bin\Release\MySQLHostManager.dll" />
         </Component>
-        <Condition Level="1">
-          <![CDATA[NETFRAMEWORK40]]>
+        <Condition Level="0">
+          <![CDATA[NOT HASNET40]]>
         </Condition>
       </Feature>
 
@@ -193,6 +203,17 @@
 
         <Condition Level="1">  <![CDATA[NOT MYSQLVERSION OR NOT MYSQLVERSION64]]></Condition>
       </Feature>
+      <Feature Id="MySQL_Samples" Title="Samples" Level="1" Description="$(var.SamplesText)">
+        <Component Id="cmp_MySQLSamples"  Guid="*" Directory="SAMPLES">
+          <File  Id="fil_MySQLCustomClass.dll"  Source="..\mysqldotnet_custom\bin\Release\MySQLCustomClass.dll" />
+        </Component>
+        <Component Id="cmp_MySQLREADME"  Guid="*" Directory="SAMPLES">
+          <File  Id="fil_README.txt"  Source="..\README.txt" />
+        </Component>
+        <Component Id="cmp_MySQLINSTALLSCRIPT"  Guid="*" Directory="SAMPLES">
+          <File  Id="fil_sql_install.sql"  Source="..\sql_install.sql" />
+        </Component>
+      </Feature>
     </Feature>
   </Product>
 
@@ -202,9 +223,12 @@
       <Merge Id="VCRedistx86" SourceFile="Microsoft_VC120_CRT_x86.msm" DiskId="1" Language="0"/>
       <Merge Id="VCRedistx64" SourceFile="Microsoft_VC120_CRT_x64.msm" DiskId="1" Language="0"/>
       <Directory Id="ProgramFilesFolder">
-        <Directory Id="MYSQLFOLDER" Name="MySQL">
+        <Directory Id="MYSQLUDFFOLDER" Name="MySQL UDF .NET">
           <Directory Id="GAC35" Name="GAC35" />
           <Directory Id="GAC40" Name="GAC40" />
+          <Directory Id="SAMPLES" Name="Samples" />
+        </Directory>
+        <Directory Id="MYSQLFOLDER" Name="MySQL">
           <Directory Id="MYSQLVER50" Name="MySQL Server 5.0">
             <Directory Id="BIN50" Name="bin" />
             <Directory Id="LIB50" Name="lib">
@@ -312,90 +336,116 @@
   </Fragment>
 
 
-  <Fragment>
-    <Component Id="cmp_MySQLConfig"  Guid="*"  Directory="BIN50">
-      <File  Id="fil_mysqld.exe.config"  Source="..\mysql_managed_interface\mysqld.exe.config" />
-    </Component>
-    <Component Id="cmp_MySQLPlugin"  Guid="*" Directory="PLUGIN50">
-      <File  Id="fil_MySQLDotNet.dll"   Source="..\x86\Release\MySQLDotNet.dll"  />
-    </Component>
-    <Component Id="cmp_MySQLPlugin_64"  Guid="*" Directory="PLUGIN50_64" Win64="yes" >
-      <File  Id="fil_MySQLDotNet.dll_64"   Source="..\x64\Release\MySQLDotNet.dll"  />
-    </Component>
-  </Fragment>
 
   <Fragment>
-    <ComponentGroup Id="cmpgrp_MySQL50" Directory="PLUGIN50">
-      <ComponentRef Id="cmp_MySQLPlugin" />
+    <ComponentGroup Id="cmpgrp_MySQL50" Directory="PLUGIN50" >
+      <Component Id="cmp_MySQLPlugin_50"  Guid="*" MultiInstance="yes">
+        <File Id="fil_MySQLDotNet.dll_50"   Source="..\x86\Release\MySQLDotNet.dll"  />
+      </Component>
     </ComponentGroup>
     <ComponentGroup Id="cmpgrp_MySQL50_64" Directory="PLUGIN50_64">
-      <ComponentRef Id="cmp_MySQLPlugin_64" />
+      <Component Id="cmp_MySQLPlugin_64_50"  Guid="*" Win64="yes" MultiInstance="yes"  >
+        <File  Id="fil_MySQLDotNet.dll_64_50"   Source="..\x64\Release\MySQLDotNet.dll"  />
+      </Component>
     </ComponentGroup>
 
     <ComponentGroup Id="cmpgrp_MySQL50Config" Directory="BIN50">
-      <ComponentRef Id="cmp_MySQLConfig" />
+      <Component Id="cmp_MySQLConfig_50"  Guid="*" MultiInstance="yes">
+        <File  Id="fil_mysqld.exe.config_50"  Source="..\mysql_managed_interface\mysqld.exe.config" />
+      </Component>
     </ComponentGroup>
     <ComponentGroup Id="cmpgrp_MySQL50Config_64" Directory="BIN50_64">
-      <ComponentRef Id="cmp_MySQLConfig" />
+      <Component Id="cmp_MySQLConfig_50_64"  Guid="*" MultiInstance="yes" Win64="yes">
+        <File  Id="fil_mysqld.exe.config_50_64"  Source="..\mysql_managed_interface\mysqld.exe.config" />
+      </Component>
     </ComponentGroup>
 
-    <ComponentGroup Id="cmpgrp_MySQL51" Directory="PLUGIN51">
-      <ComponentRef Id="cmp_MySQLPlugin" />
+    <ComponentGroup Id="cmpgrp_MySQL51" Directory="PLUGIN51" >
+      <Component Id="cmp_MySQLPlugin_51"  Guid="*" MultiInstance="yes">
+        <File Id="fil_MySQLDotNet.dll_51"   Source="..\x86\Release\MySQLDotNet.dll"  />
+      </Component>
     </ComponentGroup>
     <ComponentGroup Id="cmpgrp_MySQL51_64" Directory="PLUGIN51_64">
-      <ComponentRef Id="cmp_MySQLPlugin_64" />
+      <Component Id="cmp_MySQLPlugin_64_51"  Guid="*" Win64="yes" MultiInstance="yes"  >
+        <File  Id="fil_MySQLDotNet.dll_64_51"   Source="..\x64\Release\MySQLDotNet.dll"  />
+      </Component>
     </ComponentGroup>
 
     <ComponentGroup Id="cmpgrp_MySQL51Config" Directory="BIN51">
-      <ComponentRef Id="cmp_MySQLConfig" />
+      <Component Id="cmp_MySQLConfig_51"  Guid="*" MultiInstance="yes">
+        <File  Id="fil_mysqld.exe.config_51"  Source="..\mysql_managed_interface\mysqld.exe.config" />
+      </Component>
     </ComponentGroup>
     <ComponentGroup Id="cmpgrp_MySQL51Config_64" Directory="BIN51_64">
-      <ComponentRef Id="cmp_MySQLConfig" />
+      <Component Id="cmp_MySQLConfig_51_64"  Guid="*" MultiInstance="yes" Win64="yes">
+        <File  Id="fil_mysqld.exe.config_51_64"  Source="..\mysql_managed_interface\mysqld.exe.config" />
+      </Component>
     </ComponentGroup>
 
-    <ComponentGroup Id="cmpgrp_MySQL55" Directory="PLUGIN55">
-      <ComponentRef Id="cmp_MySQLPlugin" />
+    <ComponentGroup Id="cmpgrp_MySQL55" Directory="PLUGIN55" >
+      <Component Id="cmp_MySQLPlugin_55"  Guid="*" MultiInstance="yes">
+        <File Id="fil_MySQLDotNet.dll_55"   Source="..\x86\Release\MySQLDotNet.dll"  />
+      </Component>
     </ComponentGroup>
     <ComponentGroup Id="cmpgrp_MySQL55_64" Directory="PLUGIN55_64">
-      <ComponentRef Id="cmp_MySQLPlugin_64" />
+      <Component Id="cmp_MySQLPlugin_64_55"  Guid="*" Win64="yes" MultiInstance="yes"  >
+        <File  Id="fil_MySQLDotNet.dll_64_55"   Source="..\x64\Release\MySQLDotNet.dll"  />
+      </Component>
     </ComponentGroup>
 
     <ComponentGroup Id="cmpgrp_MySQL55Config" Directory="BIN55">
-      <ComponentRef Id="cmp_MySQLConfig" />
+      <Component Id="cmp_MySQLConfig_55"  Guid="*" MultiInstance="yes">
+        <File  Id="fil_mysqld.exe.config_55"  Source="..\mysql_managed_interface\mysqld.exe.config" />
+      </Component>
     </ComponentGroup>
     <ComponentGroup Id="cmpgrp_MySQL55Config_64" Directory="BIN55_64">
-      <ComponentRef Id="cmp_MySQLConfig" />
+      <Component Id="cmp_MySQLConfig_55_64"  Guid="*" MultiInstance="yes" Win64="yes">
+        <File  Id="fil_mysqld.exe.config_55_64"  Source="..\mysql_managed_interface\mysqld.exe.config" />
+      </Component>
     </ComponentGroup>
 
-
-    <ComponentGroup Id="cmpgrp_MySQL56" Directory="PLUGIN56">
-      <ComponentRef Id="cmp_MySQLPlugin" />
+    <ComponentGroup Id="cmpgrp_MySQL56" Directory="PLUGIN56" >
+      <Component Id="cmp_MySQLPlugin_56"  Guid="*" MultiInstance="yes">
+        <File Id="fil_MySQLDotNet.dll_56"   Source="..\x86\Release\MySQLDotNet.dll"  />
+      </Component>
     </ComponentGroup>
     <ComponentGroup Id="cmpgrp_MySQL56_64" Directory="PLUGIN56_64">
-      <ComponentRef Id="cmp_MySQLPlugin_64" />
+      <Component Id="cmp_MySQLPlugin_64_56"  Guid="*" Win64="yes" MultiInstance="yes"  >
+        <File  Id="fil_MySQLDotNet.dll_64_56"   Source="..\x64\Release\MySQLDotNet.dll"  />
+      </Component>
     </ComponentGroup>
 
     <ComponentGroup Id="cmpgrp_MySQL56Config" Directory="BIN56">
-      <ComponentRef Id="cmp_MySQLConfig" />
+      <Component Id="cmp_MySQLConfig_56"  Guid="*" MultiInstance="yes">
+        <File  Id="fil_mysqld.exe.config_56"  Source="..\mysql_managed_interface\mysqld.exe.config" />
+      </Component>
     </ComponentGroup>
     <ComponentGroup Id="cmpgrp_MySQL56Config_64" Directory="BIN56_64">
-      <ComponentRef Id="cmp_MySQLConfig" />
+      <Component Id="cmp_MySQLConfig_56_64"  Guid="*" MultiInstance="yes" Win64="yes">
+        <File  Id="fil_mysqld.exe.config_56_64"  Source="..\mysql_managed_interface\mysqld.exe.config" />
+      </Component>
     </ComponentGroup>
 
-
-    <ComponentGroup Id="cmpgrp_MySQL57" Directory="PLUGIN57">
-      <ComponentRef Id="cmp_MySQLPlugin" />
+    <ComponentGroup Id="cmpgrp_MySQL57" Directory="PLUGIN57" >
+      <Component Id="cmp_MySQLPlugin_57"  Guid="*" MultiInstance="yes">
+        <File Id="fil_MySQLDotNet.dll_57"   Source="..\x86\Release\MySQLDotNet.dll"  />
+      </Component>
     </ComponentGroup>
     <ComponentGroup Id="cmpgrp_MySQL57_64" Directory="PLUGIN57_64">
-      <ComponentRef Id="cmp_MySQLPlugin_64" />
+      <Component Id="cmp_MySQLPlugin_64_57"  Guid="*" Win64="yes" MultiInstance="yes"  >
+        <File  Id="fil_MySQLDotNet.dll_64_57"   Source="..\x64\Release\MySQLDotNet.dll"  />
+      </Component>
     </ComponentGroup>
 
     <ComponentGroup Id="cmpgrp_MySQL57Config" Directory="BIN57">
-      <ComponentRef Id="cmp_MySQLConfig" />
+      <Component Id="cmp_MySQLConfig_57"  Guid="*" MultiInstance="yes">
+        <File  Id="fil_mysqld.exe.config_57"  Source="..\mysql_managed_interface\mysqld.exe.config" />
+      </Component>
     </ComponentGroup>
     <ComponentGroup Id="cmpgrp_MySQL57Config_64" Directory="BIN57_64">
-      <ComponentRef Id="cmp_MySQLConfig" />
+      <Component Id="cmp_MySQLConfig_57_64"  Guid="*" MultiInstance="yes" Win64="yes">
+        <File  Id="fil_mysqld.exe.config_57_64"  Source="..\mysql_managed_interface\mysqld.exe.config" />
+      </Component>
     </ComponentGroup>
-
   </Fragment>
 </Wix>

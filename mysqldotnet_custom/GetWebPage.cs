@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace MySQLCustomClass
 {
-    public class PointsInRadius : MySQLHostManager.ICustomAssembly
+    public class GetWebPage : MySQLHostManager.ICustomAssembly
     {
-
         public long RunInteger(long value)
         {
             throw new NotImplementedException();
@@ -26,26 +25,16 @@ namespace MySQLCustomClass
 
         public double RunReals(double[] values)
         {
-            if (values.Length >= 4)
-            {
-                var gc = new System.Device.Location.GeoCoordinate(values[0], values[1]);
-                var distance = gc.GetDistanceTo(new System.Device.Location.GeoCoordinate(values[2], values[3]));
-                if (values.Length >= 5)
-                {
-                    if (distance <= values[4])
-                    {
-                        return 1.0;
-                    }
-                    return 0.0;
-                }
-                return distance;
-            }
-            return 0.0;
+            throw new NotImplementedException();
         }
 
         public string RunString(string value)
         {
-            throw new NotImplementedException();
+            using (var wc = new System.Net.WebClient())
+            {
+                var str = wc.DownloadString(value);
+                return str;
+            }
         }
 
         public string RunStrings(string[] values)

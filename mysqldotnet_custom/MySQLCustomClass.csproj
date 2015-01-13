@@ -86,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Add3ToIntCustom.cs" />
+    <Compile Include="GetWebPage.cs" />
     <Compile Include="PointsInRadius.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

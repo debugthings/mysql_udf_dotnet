@@ -440,6 +440,7 @@ STDMETHODIMP CClrHost::raw_UnloadAppDomain(IManagedHost * managedHost, VARIANT_B
 	}
 	catch (const _com_error &e)
 	{
+		_CRT_UNUSED(e);
 		// I'm alright with there being nothing here.
 	}
 	return S_OK;

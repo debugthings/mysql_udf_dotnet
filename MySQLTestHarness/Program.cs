@@ -26,9 +26,10 @@ namespace MySQLTestHarness
         {
             for (int i = 0; i < 600; i++)
             {
+                //dotnetuser - MySQL12345!!
                 using (var conn = new MySql.Data.MySqlClient.MySqlConnection(@"Server=localhost;Database=employees;Uid=root"))
                 //using (var comm = new MySql.Data.MySqlClient.MySqlCommand(@"SELECT (emp_no * 3.14) + 10, emp_no, first_name, last_name FROM employees", conn))
-                using (var comm = new MySql.Data.MySqlClient.MySqlCommand(@"SELECT  CAST(mysqldotnet_string(""MySQLCustomClass.CustomMySQLClass"", ""MULTI"", first_name, first_name, first_name) AS char) FROM employees.employees", conn))
+                using (var comm = new MySql.Data.MySqlClient.MySqlCommand(@"SELECT  CAST(mysqldotnet_string(""MySQLCustomClass.CustomMySQLClass"", ""MULTI"", first_name, first_name, first_name, first_name, first_name, first_name, first_name, first_name, first_name, first_name, first_name, first_name, first_name, first_name, first_name, first_name, first_name, first_name, first_name, first_name, first_name, first_name, first_name, first_name) AS char) FROM employees.employees", conn))
                 using (var dt = new System.Data.DataTable())
                 {
                     comm.CommandTimeout = 600;

@@ -131,13 +131,14 @@ _bstr_t RunStrings(IManagedHostPtr &pClr, _bstr_t &functionName, char** input, u
 		{
 			for (size_t i = 0, j = 0; i < lengths[ix] / 2; i++, j += 2)
 			{
-				txt[i] |= (((wchar_t)input[j]) << 0x8) | ((wchar_t)(input[j + 1]));
+				txt[i] |= ((reinterpret_cast<wchar_t>(input[j])) << 0x8) | (reinterpret_cast<wchar_t>((input[j + 1])));
 			}
 		}
 		else {
 			MultiByteToWideChar(*codepage, NULL, input[ix], lengths[ix], txt, txtLen);
 		}
-		((BSTR*)sa->pvData)[ix - codepageIndex] = SysAllocString(txt);
+		//((BSTR*)sa->pvData)[ix - codepageIndex] = SysAllocString(txt);
+		((BSTR*)sa->pvData)[ix - codepageIndex] = *(new _bstr_t(txt));
 		delete txt;
 	}
 	hr = SafeArrayUnlock(sa);
@@ -236,7 +237,7 @@ my_bool InitializeCLR(UDF_INIT *initid, UDF_ARGS *args, char *message)
 				// code execution.
 				auto ret = pClrHost->CreateAppDomainForQuery(_bstr_t(args->args[0]));
 				auto name = std::wstring(ret->GetAppDomainName);
-				initid->ptr = (char*)&*ret; // Copy host pointer so it is not lost when out of scope.
+				initid->ptr = reinterpret_cast<char*>(&*ret); // Copy host pointer so it is not lost when out of scope.
 				stringMap->insert(std::pair<std::wstring, std::vector<char*>>(name, std::vector<char*>()));
 			}
 		}
@@ -324,7 +325,7 @@ extern "C"
 		{
 			longlong val = 0;
 			uint i;
-			IManagedHostPtr mhp = (IManagedHost*)initid->ptr;
+			IManagedHostPtr mhp = reinterpret_cast<IManagedHost*>(initid->ptr);;
 			char* argName = args->args[0];
 			++args->args;
 			++args->arg_type;
@@ -336,10 +337,10 @@ extern "C"
 					continue;
 				switch (args->arg_type[i]) {
 				case INT_RESULT:			/* Add numbers */
-					val += RunInteger(mhp, _bstr_t(argName), *((longlong*)args->args[i]));
+					val += RunInteger(mhp, _bstr_t(argName), getIntegerForArray<longlong>(args->args[i], args->arg_type[i]));
 					break;
 				case REAL_RESULT:			/* Add numers as longlong */
-					val += RunInteger(mhp, _bstr_t(argName), *((longlong*)args->args[i]));
+					val += RunInteger(mhp, _bstr_t(argName), getIntegerForArray<longlong>(args->args[i], args->arg_type[i]));
 					break;
 				case STRING_RESULT:
 					if (strcmp((char*)args->args[i], g_multikeyword) == 0)
@@ -386,7 +387,7 @@ extern "C"
 		{
 			double val = 0;
 			uint i;
-			IManagedHostPtr mhp = (IManagedHost*)initid->ptr;
+			IManagedHostPtr mhp = reinterpret_cast<IManagedHost*>(initid->ptr);
 
 			char* argName = args->args[0];
 			++args->args;
@@ -400,10 +401,10 @@ extern "C"
 					continue;
 				switch (args->arg_type[i]) {
 				case INT_RESULT:			/* Add numbers */
-					val += (double)RunReal(mhp, _bstr_t(argName), *((longlong*)args->args[i]));
+					val += RunReal(mhp, _bstr_t(argName), getIntegerForArray<double>(args->args[i], args->arg_type[i]));
 					break;
 				case REAL_RESULT:			/* Add numers as longlong */
-					val += RunReal(mhp, _bstr_t(argName), *((double*)args->args[i]));
+					val += RunReal(mhp, _bstr_t(argName), getIntegerForArray<double>(args->args[i], args->arg_type[i]));
 					break;
 				case STRING_RESULT:
 					if (strcmp((char*)args->args[i], g_multikeyword) == 0)
@@ -446,7 +447,7 @@ extern "C"
 			uint i;
 			long lastlen = 0;
 			std::string stringResult;
-			IManagedHostPtr mhp = (IManagedHost*)initid->ptr;
+			IManagedHostPtr mhp = reinterpret_cast<IManagedHost*>(initid->ptr);
 			_bstr_t argName = _bstr_t(args->args[0]);
 			_bstr_t ptrCpy = _bstr_t();
 			long len = 0;
@@ -461,7 +462,7 @@ extern "C"
 				if (args->args[i] == NULL)
 					continue;
 				if (args->arg_type[i] == STRING_RESULT) {
-					if ((strcmp((char*)args->args[i], g_multikeyword) == 0) & ((i == 1) || (codepage > 0 & i == 2)))
+					if ((strcmp(static_cast<char*>(args->args[i]), g_multikeyword) == 0) && ((i == 1) || ((codepage > 0) && (i == 2))))
 					{
 						// If multi is in the first position then we are MULTI valued
 						// If multi is in the second position and the code page is set then we are multivalued
@@ -532,6 +533,8 @@ extern "C"
 		{
 			UNREFERENCED_PARAMETER(e);
 			// Blanket error here. We are not worrying about what the exception is. We are trusting that this exception is bad.
+			char msg[1024];
+			errorMessage(e, msg, FALSE);
 			*error = 1;
 			return 0;
 
